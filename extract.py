@@ -25,43 +25,33 @@ def save_source(source):
 
     for resource in dp_source.resources:
 
-        url = resource.path
-        parsed_url = urlparse(url)
-        print(parsed_url.path)
-        print(parsed_url.scheme)
+        resource_remotepath = f'{resource.basepath}/{resource.path}'
+        response = requests.get(str(resource_remotepath), stream=True)
+        response.raise_for_status()
 
-        #if resource.remote == True:
-        if parsed_url.scheme == 'https':
-            # TODO code for https url
-            print('NEED IMPLEMENTATION')
+        #datapackage_path = parsed_url.path.lstrip('/') # TODO change name, not always a dp
 
-        #elif resource.remote == False:
-        elif parsed_url.scheme == '':
-            resource_remotepath = Path(resource.basepath, resource.path)
-            response = requests.get(resource_path, stream=True)
-            response.raise_for_status()
+        #url_dir = os.path.join(source['name'], os.path.dirname(datapackage_path))
 
-            datapackage_path = parsed_url.path.lstrip('/') # TODO change name, not always a dp
+        #dataset_dir = 'datapackages' # TODO not put string literals inside a function. Parameter, constant or arg?
+        # os.makedirs(resource_path.parent, exist_ok=True)
 
-            url_dir = os.path.join(source['name'], os.path.dirname(datapackage_path))
-
-            dataset_dir = 'datapackages' # TODO not put string literals inside a function. Parameter, constant or arg?
-            file_dir = os.path.join(dataset_dir, url_dir)
-
-            os.makedirs(file_dir, exist_ok=True)
-            file_path = merge_remove_path_redundancies(file_dir, datapackage_path)
-            #file_path = os.path.join(file_dir, datapackage_path) # if above works, remove this
+        resource_path = Path(file_dir, resource.path)
+        resource_path.parent.mkdir(parents=True, exist_ok=True)
 
 
-            #if mimetypes.guess_type(file_path)[0] in ('text/plain', 'text/csv'):
-            if 'text' in resource.mediatype:
-                response.raw.decode_content = True
-            else:
-                response.raw.decode_content = False
+        #file_path = merge_remove_path_redundancies(file_dir, datapackage_path)
+        #file_path = os.path.join(file_dir, datapackage_path) # if above works, remove this
 
 
-            with open(file_path, 'wb') as file:
-                shutil.copyfileobj(response.raw, file)
+        #if mimetypes.guess_type(file_path)[0] in ('text/plain', 'text/csv'):
+        if 'text' in resource.mediatype:
+            response.raw.decode_content = True
+        else:
+            response.raw.decode_content = False
+
+        with open(resource_path, 'wb') as file:
+            shutil.copyfileobj(response.raw, file)
 
     # TODO : 2. tratar depois os casos que o path do resouce de uma source é uma URL.
     # TODO : 3. tratar situação de quando a source do datapackge_master for um arquivo local (frictionless.byte_stream() deve tratar os dois casos melhor.

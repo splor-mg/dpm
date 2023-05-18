@@ -11,7 +11,7 @@
     {
       "name": "reprex-excel",
       "title": "exemplo datapackage excel",
-      "path": "datapackage-reprex/main/20230512T084359/datapackage.json"
+      "path": "https://raw.githubusercontent.com/splor-mg/datapackage-reprex/main/20230512T084359/datapackage.json"
     },
     {
       "name": "transparencia-reprex-foreignkey",
