@@ -1,5 +1,7 @@
 # Data Package Manager (dpm)
 
+## Docker
+
 Para fazer build da imagem e executar o container execute:
 
 ```bash
@@ -12,3 +14,5 @@ Para rodar o jupyter notebook dentro do container execute
 ```bash
 jupyter notebook --ip 0.0.0.0 --allow-root
 ```
+
+Para executar o código usando Docker no Pycharm, utilizar [este guia](https://github.com/splor-mg/dpm/issues/5).
