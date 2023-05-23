@@ -5,10 +5,7 @@ description = "A package for install, update and manage sources of sets of datap
 readme = "README.md"
 dependencies = [
   'frictionless',
-  'urllib',
-  'pathlib',
-  'shutil',
-  'response'
+  'requests'
 ]
 [build-system]
 requires = ["hatchling"]
