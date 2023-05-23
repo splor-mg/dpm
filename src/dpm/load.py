@@ -1,5 +1,5 @@
 from frictionless import Package
-from extract import extract_sources
+from dpm.extract import extract_sources
 
 # TODO Create main
 # TODO use logging
