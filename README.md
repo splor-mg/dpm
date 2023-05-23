@@ -1,3 +1,6 @@
+## Authors
+- [Andrey Labanca (@labanca)](https://www.github.com/labanca)
+- [Franscisco Júnior (@fjuniorr)](https://github.com/fjuniorr)
 # Data Package Manager (dpm)
 
 ## Docker
