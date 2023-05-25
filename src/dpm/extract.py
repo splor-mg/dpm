@@ -18,7 +18,7 @@ def extract_sources(datapackage_master):
 
 def extract_resources(source):
 
-    dataset_dir = '/datapackages'
+    dataset_dir = './datapackages'
     file_dir = os.path.join(dataset_dir, source['name'])
 
     os.makedirs(file_dir, exist_ok=True)
