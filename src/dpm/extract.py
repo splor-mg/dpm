@@ -1,8 +1,7 @@
 import requests
 import shutil
 import os
-from urllib.parse import urlparse
-from frictionless import Package, Resource
+from frictionless import Package
 from pathlib import Path
 import logging
 
