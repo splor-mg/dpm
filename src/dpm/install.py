@@ -27,6 +27,7 @@ def extract_resources(source):
     file_path = os.path.join(file_dir, 'datapackage.json')
 
     dp_source = Package(source['path'])
+    dp_source.dereference()
     dp_source.to_json(file_path)
     logger.info(f'datapackage.json salvo em {file_path} ')
 
