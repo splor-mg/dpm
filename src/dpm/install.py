@@ -5,13 +5,15 @@ from frictionless import Package
 from pathlib import Path
 import logging
 
+logger = logging.getLogger(__name__)
+
 def extract_sources(datapackage_master):
 
 
-    logging.info(f'Utilizando datapackage master: {datapackage_master.name}')
+    logger.info(f'Utilizando datapackage master: {datapackage_master.name}')
 
     for source in datapackage_master.sources:
-        logging.info(f'Utlizando source "{source["name"]}".')
+        logger.info(f'Utlizando source "{source["name"]}".')
         extract_resources(source)
 
 
@@ -26,7 +28,7 @@ def extract_resources(source):
 
     dp_source = Package(source['path'])
     dp_source.to_json(file_path)
-    logging.info(f'datapackage.json salvo em {file_path} ')
+    logger.info(f'datapackage.json salvo em {file_path} ')
 
     for resource in dp_source.resources:
 
@@ -45,4 +47,4 @@ def extract_resources(source):
         with open(resource_path, 'wb') as file:
             shutil.copyfileobj(response.raw, file)
 
-        logging.info(f'Fonte de dados (resource) "{resource.name}" salva em {resource_path}')
+        logger.info(f'Fonte de dados (resource) "{resource.name}" salva em {resource_path}')
