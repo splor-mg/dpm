@@ -1,6 +1,6 @@
 import typer
 from frictionless import Package
-from dpm.install import extract_sources
+from dpm.install import extract_source_packages
 
 app = typer.Typer()
 
@@ -16,4 +16,4 @@ def install(descriptor: str = 'datapackage.yaml'):
     Download data packages (descriptor and resources data files) listed in package.sources and saves into datapackages/
     """
     package = Package(descriptor)
-    extract_sources(package)
+    extract_source_packages(package)

@@ -1,43 +1,28 @@
 import requests
 import shutil
-import os
 from frictionless import Package
 from pathlib import Path
 import logging
 
 logger = logging.getLogger(__name__)
 
-def extract_sources(datapackage_master):
+def extract_source_packages(package):
+    for source in package.sources:
+        logger.info(f'Downloading source package {source["name"]}...')
+        extract_source_package(source)
 
+def extract_source_package(source):
+    package = Package(source['path'])
+    package_descriptor_path = Path('datapackages', source['name'], 'datapackage.json')
+    package.dereference()
+    package.to_json(package_descriptor_path)
 
-    logger.info(f'Utilizando datapackage master: {datapackage_master.name}')
-
-    for source in datapackage_master.sources:
-        logger.info(f'Utlizando source "{source["name"]}".')
-        extract_resources(source)
-
-
-def extract_resources(source):
-
-    dataset_dir = './datapackages'
-    file_dir = os.path.join(dataset_dir, source['name'])
-
-    os.makedirs(file_dir, exist_ok=True)
-
-    file_path = os.path.join(file_dir, 'datapackage.json')
-
-    dp_source = Package(source['path'])
-    dp_source.dereference()
-    dp_source.to_json(file_path)
-    logger.info(f'datapackage.json salvo em {file_path} ')
-
-    for resource in dp_source.resources:
-
+    for resource in package.resources:
         resource_remotepath = f'{resource.basepath}/{resource.path}'
         response = requests.get(str(resource_remotepath), stream=True)
         response.raise_for_status()
 
-        resource_path = Path(file_dir, resource.path)
+        resource_path = Path(package_descriptor_path.parent, resource.path)
         resource_path.parent.mkdir(parents=True, exist_ok=True)
 
         if 'text' in resource.mediatype:
@@ -48,4 +33,4 @@ def extract_resources(source):
         with open(resource_path, 'wb') as file:
             shutil.copyfileobj(response.raw, file)
 
-        logger.info(f'Fonte de dados (resource) "{resource.name}" salva em {resource_path}')
+        logger.info(f'Data file of resource {resource.name} saved in {resource_path}')
