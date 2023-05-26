@@ -26,7 +26,7 @@ def extract_resources(source):
     file_path = os.path.join(file_dir, 'datapackage.json')
 
     dp_source = Package(source['path'])
-    dp_source.to_json(file_path) # Done!
+    dp_source.to_json(file_path)
     logging.info(f'datapackage.json salvo em {file_path} ')
 
     for resource in dp_source.resources:
@@ -46,9 +46,4 @@ def extract_resources(source):
         with open(resource_path, 'wb') as file:
             shutil.copyfileobj(response.raw, file)
 
-        #print(f'Fonte de dados (resource) "{resource.name}" salva em {resource_path}')
         logging.info(f'Fonte de dados (resource) "{resource.name}" salva em {resource_path}')
-    # TODO : 2. tratar depois os casos que o path do resouce de uma source é uma URL.
-    # TODO : 3. tratar situação de quando a source do datapackge_master for um arquivo local (frictionless.byte_stream() deve tratar os dois casos melhor.
-    # TODO : 4. Como tratar um data_resource que não tem schema?
-
