@@ -1,0 +1,9 @@
+name: spreadmart
+resources: 
+  - name: datamart
+    path: datamart.sqlite
+sources:
+  - name: reprex-excel
+    path: https://raw.githubusercontent.com/splor-mg/datapackage-reprex/main/20230512T084359/datapackage.json
+  - name: transparencia-reprex-foreignkey
+    path: https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json
