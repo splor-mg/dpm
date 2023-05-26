@@ -1,6 +1,6 @@
 import typer
 from frictionless import Package
-from dpm.extract import extract_sources
+from dpm.install import extract_sources
 
 app = typer.Typer()
 
