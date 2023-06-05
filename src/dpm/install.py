@@ -3,6 +3,10 @@ import shutil
 from frictionless import Package
 from pathlib import Path
 import logging
+import os
+
+key = 'GITHUB_TOKEN'
+github_token = os.getenv(key)
 
 logger = logging.getLogger(__name__)
 
