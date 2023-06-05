@@ -1,1 +1,3 @@
 frictionless==5.13.1
+sqlalchemy==2.0.13
+dpm @ git+https://github.com/splor-mg/dpm.git@development#egg=dpm

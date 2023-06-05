@@ -1,0 +1,16 @@
+[project]
+name = "dpm"
+version = "0.0.0.9005"
+description = "A package for install, update and manage sources of sets of datapackages"
+readme = "README.md"
+dependencies = [
+  'frictionless',
+  'requests',
+  'typer'
+]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+dpm = "dpm.cli:app"
