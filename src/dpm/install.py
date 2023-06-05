@@ -19,7 +19,10 @@ def extract_source_package(source):
 
     for resource in package.resources:
         resource_remotepath = f'{resource.basepath}/{resource.path}'
-        response = requests.get(str(resource_remotepath), stream=True)
+        headers = {'Authorization': f'token {github_token}'}
+        response = requests.get(str(resource_remotepath), headers=headers, stream=True)
+        #response = requests.get(str(resource_remotepath), stream=True)
+
         response.raise_for_status()
 
         resource_path = Path(package_descriptor_path.parent, resource.path)
