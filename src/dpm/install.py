@@ -9,7 +9,9 @@ logger = logging.getLogger(__name__)
 
 def update_session_headers(session, source):
 
-    token = os.getenv(source.get('token'))
+    varenv_name = source.get('token') if source.get('token') != None else ''
+
+    token = os.getenv(varenv_name)
 
     if token:
         session.headers['Authorization'] = f"Bearer {token}"

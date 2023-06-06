@@ -1,6 +1,6 @@
 [project]
 name = "dpm"
-version = "0.0.0.9009"
+version = "0.0.0.9010"
 description = "A package for install, update and manage sources of sets of datapackages"
 readme = "README.md"
 dependencies = [
