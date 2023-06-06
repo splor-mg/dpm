@@ -10,4 +10,4 @@ sources:
     token:
   - name: private-reprex
     path: https://raw.githubusercontent.com/labanca/private-reprex/main/datapackage.json
-    token: github_pat_foobar
+    token: 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
