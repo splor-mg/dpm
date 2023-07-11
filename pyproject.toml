@@ -6,7 +6,8 @@ readme = "README.md"
 dependencies = [
   'frictionless',
   'requests',
-  'typer'
+  'typer',
+  'unidecode'
 ]
 [build-system]
 requires = ["hatchling"]
