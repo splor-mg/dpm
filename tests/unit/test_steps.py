@@ -39,6 +39,7 @@ def test_step_table_write_normalized(tmp_path):
     assert resource.format == 'csv'
     assert resource.scheme == 'file'
     assert resource.encoding == 'utf-8'
+    assert resource.path
     
     assert resource.schema.to_descriptor()['fields'] == [
         {'name': 'Unidade Orçamentária - Código', 'type': 'integer', 'constraints': {'required': True}, 'target': 'uo_cod'}, 
@@ -68,6 +69,8 @@ def test_step_table_write_normalized_output_dir(tmp_path):
     )
     resource.transform(pipeline)
     target = Resource(path=f'{output_dir}/{Path(resource.name).stem}.csv')
+
+    assert resource.path
 
     assert target.read_rows() == [
         {'Unidade Orçamentária - Código': 1501, 'uo_desc': 'Planejamento e Gestão', 'Vigente?': False, 'VALID_FROM': date(1995, 1, 1), 'Valid_to': date(2002, 1, 1), 'Updated at': datetime(1994, 11, 30, 9, 45)}, 

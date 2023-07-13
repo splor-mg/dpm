@@ -81,7 +81,7 @@ class table_write_normalized(Step):
         resource.to_petl().tocsv(path, encoding = 'utf-8')
         resource.profile = 'tabular-data-resource'
         resource.data = None
-        resource.path = self.path
+        resource.path = path
         resource.encoding = 'utf-8'
         resource.format = 'csv'
         resource.scheme = 'file'
