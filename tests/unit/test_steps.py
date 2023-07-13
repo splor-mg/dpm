@@ -2,6 +2,7 @@ from frictionless import Resource, Schema, Pipeline, steps
 from frictionless.resources import TableResource
 from dpm.steps import field_rename_to_target, table_write_normalized
 from datetime import date, datetime
+from pathlib import Path
 
 def test_step_field_rename_to_target():
     resource = Resource('tests/data/temporal-dim.yaml')
@@ -47,6 +48,26 @@ def test_step_table_write_normalized(tmp_path):
         {'name': 'Valid_to', 'type': 'date', 'description': 'This is a big and nice description\n'}, 
         {'name': 'Updated at', 'type': 'datetime'}
     ]
+
+    assert target.read_rows() == [
+        {'Unidade Orçamentária - Código': 1501, 'uo_desc': 'Planejamento e Gestão', 'Vigente?': False, 'VALID_FROM': date(1995, 1, 1), 'Valid_to': date(2002, 1, 1), 'Updated at': datetime(1994, 11, 30, 9, 45)}, 
+        {'Unidade Orçamentária - Código': 1501, 'uo_desc': 'SEPLAG', 'Vigente?': True, 'VALID_FROM': date(2002, 1, 1), 'Valid_to': date(9999, 12, 31), 'Updated at': datetime(2002, 9, 30, 10, 45)}, 
+        {'Unidade Orçamentária - Código': 1251, 'uo_desc': None, 'Vigente?': True, 'VALID_FROM': date(2002, 1, 1), 'Valid_to': date(9999, 12, 31), 'Updated at': datetime(2002, 9, 30, 10, 45)}, 
+        {'Unidade Orçamentária - Código': 1251, 'uo_desc': 'PMMG', 'Vigente?': True, 'VALID_FROM': date(2002, 1, 1), 'Valid_to': date(9999, 12, 31), 'Updated at': datetime(2002, 9, 30, 10, 43)}
+    ]
+
+def test_step_table_write_normalized_output_dir(tmp_path):
+    resource = Resource('tests/data/temporal-dim.yaml')
+    
+    output_dir = str(tmp_path / 'build')
+
+    pipeline = Pipeline(
+        steps=[
+            table_write_normalized(output_dir=output_dir),
+        ],
+    )
+    resource.transform(pipeline)
+    target = Resource(path=f'{output_dir}/{Path(resource.name).stem}.csv')
 
     assert target.read_rows() == [
         {'Unidade Orçamentária - Código': 1501, 'uo_desc': 'Planejamento e Gestão', 'Vigente?': False, 'VALID_FROM': date(1995, 1, 1), 'Valid_to': date(2002, 1, 1), 'Updated at': datetime(1994, 11, 30, 9, 45)}, 

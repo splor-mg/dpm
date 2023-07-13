@@ -46,7 +46,7 @@ class field_rename_to_target(Step):
 @attrs.define(kw_only=True, repr=False)
 class table_write_normalized(Step):
     """
-    Normalize fields (number, integer, boolean, date, time, datetime) that allow variable formatting (eg. July 13, 2023 vs 2023-07-13) and missing values to a standard representation and export the data to a given path.
+    Normalize fields (number, integer, boolean, date, time, datetime) that allow variable formatting (eg. July 13, 2023 vs 2023-07-13) and missing values to a standard representation and export the data to a given path or to a given folder with filename resource-name.csv.
 
     The field descriptor is also adjusted so that it continues to be valid for the normalized data (ie. `"format": "%d/%m/%y"` no longer apply to a DateField after normalization and should be removed).
 
@@ -62,12 +62,21 @@ class table_write_normalized(Step):
 
     """
     
-    path: str
+    path: str = None
+    output_dir: str = None
 
     def transform_resource(self, resource: Resource):
         
         transform(resource, steps=[steps.table_normalize()])
-        path = Path(self.path)
+        if self.path is not None and self.output_dir is not None:
+            raise ValueError("Only one of 'path' or 'output_dir' can be specified")
+        if self.path is None and self.output_dir is None:
+            raise ValueError("One of 'path' or 'output_dir' must be specified")
+        if self.output_dir:
+            path = Path(f'{self.output_dir}/{Path(resource.name).stem}.csv')
+        else:
+            path = Path(self.path)
+        
         path.parent.mkdir(parents=True, exist_ok=True)
         resource.to_petl().tocsv(path, encoding = 'utf-8')
         resource.profile = 'tabular-data-resource'
