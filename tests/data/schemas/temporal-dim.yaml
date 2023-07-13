@@ -6,6 +6,8 @@ fields:
       required: true
   - name: uo_desc
     type: string
+    missingValues:
+       - NA
   - name: Vigente?
     target: valid
     type: boolean
