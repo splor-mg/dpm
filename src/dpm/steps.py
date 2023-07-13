@@ -86,6 +86,7 @@ class table_write_normalized(Step):
         resource.format = 'csv'
         resource.scheme = 'file'
         resource.extrapaths = None
+        resource.infer(stats=True)
         for field in resource.schema.fields:
             field.format = None
             field.missing_values = None
