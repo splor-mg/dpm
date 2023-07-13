@@ -3,19 +3,17 @@ from pathlib import Path
 from .utils import as_identifier
 import attrs
 
-class normalize_field_names(Step):
+class field_rename_to_target(Step):
     def transform_resource(self, resource: Resource):
         resource.schema.primary_key = []
         resource.schema.foreign_keys = []
         for field in resource.schema.fields:
-            target = field.custom.get('target')
-            if target:
-                descriptor = {'name': target, 'source': field.name}
-                resource.schema.update_field(field.name, descriptor)
-                resource.schema.get_field(target).custom.pop('target')
-            elif field.name != as_identifier(field.name):
-                resource.schema.update_field(field.name, {'name': as_identifier(field.name), 'source': field.name})
-
+            if not field.custom.get('target'):
+                field.custom['target'] = as_identifier(field.name)
+            target = field.custom['target']
+            descriptor = {'name': target, 'source': field.name}
+            resource.schema.update_field(field.name, descriptor)
+            resource.schema.get_field(target).custom.pop('target')
 
 @attrs.define(kw_only=True, repr=False)
 class enrich_resource(Step):
