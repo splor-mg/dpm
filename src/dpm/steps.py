@@ -47,7 +47,7 @@ class enrich_resource(Step):
         resource.schema.add_field(Field.from_descriptor({'name': self.column[1], 'type': 'string'}), position=resource.schema.field_names.index(self.key)+2)
 
 @attrs.define(kw_only=True, repr=False)
-class normalize_resource_data(Step):
+class table_write_normalized(Step):
     """
     Class docstring
     """
@@ -70,8 +70,6 @@ class normalize_resource_data(Step):
         resource.format = 'csv'
         resource.scheme = 'file'
         resource.extrapaths = None
-        resource.infer(stats=True)
-        resource.dereference()
         for field in resource.schema.fields:
             field.format = None
             field.missing_values = None
