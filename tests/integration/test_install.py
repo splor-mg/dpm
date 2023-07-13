@@ -5,7 +5,7 @@ from pathlib import Path
 runner = CliRunner()
 
 def test_app():
-    result = runner.invoke(app, ["install", "--descriptor", "data/datapackage.yaml"])
+    result = runner.invoke(app, ["install", "--descriptor", "tests/data/datapackage.yaml"])
     expected = ['datapackages/reprex-excel', 
                 'datapackages/transparencia-reprex-foreignkey', 
                 'datapackages/reprex-excel/missing_date.xlsx', 
