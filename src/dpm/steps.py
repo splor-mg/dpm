@@ -16,37 +16,6 @@ class field_rename_to_target(Step):
             resource.schema.get_field(target).custom.pop('target')
 
 @attrs.define(kw_only=True, repr=False)
-class enrich_resource(Step):
-    
-    classificacao: str
-    key: str
-    column: list
-
-    def non_equi_join(self, x, y, key, key_y, column):
-        """
-        non_equi_join(fact, dim, 'code', 'code')
-        """
-        for row in x:
-            matched = False
-            for row_y in y:
-                # print(f'{row=}')
-                # print(f'{row_y=}')
-                if row[key] == row_y[key_y] and row_y['valid_from'] <= row['valid_ref'] <= row_y['valid_to']:
-                    desc = {column[1]: row_y[column[0]]}
-                    yield {**row, **desc}
-                    matched = True
-                    break
-            if not matched:
-                    desc = {column[1]: None}
-                    yield {**row, **desc}
-    
-    def transform_resource(self, resource: Resource):
-        classificador = Package('https://raw.githubusercontent.com/splor-mg/classificador/dev/data/datapackage.json')
-        result = self.non_equi_join(resource.read_rows(), classificador.get_resource(self.classificacao).read_rows(), self.key, 'code', self.column)
-        resource.data = result
-        resource.schema.add_field(Field.from_descriptor({'name': self.column[1], 'type': 'string'}), position=resource.schema.field_names.index(self.key)+2)
-
-@attrs.define(kw_only=True, repr=False)
 class table_write_normalized(Step):
     """
     Class docstring
