@@ -4,6 +4,34 @@ from .utils import as_identifier
 import attrs
 
 class field_rename_to_target(Step):
+    """
+    Rename a field to a target property if present or to a slugified version of current name preserving lineage through source property.
+
+    Example:
+
+        The source schema:
+        
+        ---
+        fields:
+            - name: Programa - Código
+            target: programa_cod
+            - name: Programa Desc
+            - name: vr_meta_orcamentaria
+        ...
+
+        is converted to the target schema:
+        
+        ---
+        fields:
+            - name: programa_cod
+            source: Programa - Código
+            - name: programa_desc
+            source: Programa Desc
+            - name: vr_meta_orcamentaria
+            source: vr_meta_orcamentaria
+        ...
+    """
+
     def transform_resource(self, resource: Resource):
         resource.schema.primary_key = []
         resource.schema.foreign_keys = []
@@ -18,13 +46,23 @@ class field_rename_to_target(Step):
 @attrs.define(kw_only=True, repr=False)
 class table_write_normalized(Step):
     """
-    Class docstring
+    Normalize fields (number, integer, boolean, date, time, datetime) that allow variable formatting (eg. July 13, 2023 vs 2023-07-13) and missing values to a standard representation and export the data to a given path.
+
+    The field descriptor is also adjusted so that it continues to be valid for the normalized data (ie. `"format": "%d/%m/%y"` no longer apply to a DateField after normalization and should be removed).
+
+    The following properties are dropped if present:
+
+    - `decimalChar`
+    - `groupChar`
+    - `bareNumber`
+    - `trueValues`
+    - `falseValues`
+    - `format`
+    - `missingValues`
+
     """
     
     path: str
-    """
-    resource.path for the new normalized resource
-    """
 
     def transform_resource(self, resource: Resource):
         
