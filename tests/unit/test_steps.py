@@ -51,6 +51,13 @@ def test_step_table_write_normalized(tmp_path):
         {'name': 'Updated at', 'type': 'datetime'}
     ]
 
+    assert resource.read_rows() == [
+        {'Unidade Orçamentária - Código': 1501, 'uo_desc': 'Planejamento e Gestão', 'Vigente?': False, 'VALID_FROM': date(1995, 1, 1), 'Valid_to': date(2002, 1, 1), 'Updated at': datetime(1994, 11, 30, 9, 45)}, 
+        {'Unidade Orçamentária - Código': 1501, 'uo_desc': 'SEPLAG', 'Vigente?': True, 'VALID_FROM': date(2002, 1, 1), 'Valid_to': date(9999, 12, 31), 'Updated at': datetime(2002, 9, 30, 10, 45)}, 
+        {'Unidade Orçamentária - Código': 1251, 'uo_desc': None, 'Vigente?': True, 'VALID_FROM': date(2002, 1, 1), 'Valid_to': date(9999, 12, 31), 'Updated at': datetime(2002, 9, 30, 10, 45)}, 
+        {'Unidade Orçamentária - Código': 1251, 'uo_desc': 'PMMG', 'Vigente?': True, 'VALID_FROM': date(2002, 1, 1), 'Valid_to': date(9999, 12, 31), 'Updated at': datetime(2002, 9, 30, 10, 43)}
+    ]
+
     assert target.read_rows() == [
         {'Unidade Orçamentária - Código': 1501, 'uo_desc': 'Planejamento e Gestão', 'Vigente?': False, 'VALID_FROM': date(1995, 1, 1), 'Valid_to': date(2002, 1, 1), 'Updated at': datetime(1994, 11, 30, 9, 45)}, 
         {'Unidade Orçamentária - Código': 1501, 'uo_desc': 'SEPLAG', 'Vigente?': True, 'VALID_FROM': date(2002, 1, 1), 'Valid_to': date(9999, 12, 31), 'Updated at': datetime(2002, 9, 30, 10, 45)}, 
