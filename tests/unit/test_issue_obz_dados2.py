@@ -10,6 +10,7 @@ def test_step_field_rename_to_target():
     pipeline = Pipeline(
         steps=[
             field_rename_to_target(),
+            steps.table_normalize(),
             steps.row_filter(formula='uo_cod != 1251'),
         ],
     )
