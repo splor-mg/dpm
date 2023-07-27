@@ -9,17 +9,13 @@ logger = logging.getLogger(__name__)
 
 def update_session_headers(session, source):
 
-    varenv_name = source.get('token') if source.get('token') != None else ''
-
-    token = os.getenv(varenv_name)
-    logger.info(f'Using token stored in {varenv_name} for accessing data package {source["name"]}')
-
-    if token:
+    varenv_name = source.get('token')
+    if varenv_name:
+        logger.info(f'Using token stored in {varenv_name} for accessing data package {source["name"]}')
+        token = os.getenv(varenv_name)
         session.headers['Authorization'] = f"Bearer {token}"
-        return session
-    else:
-        return session
 
+    return session
 
 def extract_source_packages(package):
     for source in package.sources:
