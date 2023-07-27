@@ -12,7 +12,7 @@ def update_session_headers(session, source):
     varenv_name = source.get('token') if source.get('token') != None else ''
 
     token = os.getenv(varenv_name)
-    print(f'source: {source["name"]} | varenv_name: {varenv_name} | token: {token}')
+    logger.info(f'Using token stored in {varenv_name} for accessing data package {source["name"]}')
 
     if token:
         session.headers['Authorization'] = f"Bearer {token}"
