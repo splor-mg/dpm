@@ -13,9 +13,10 @@ def callback():
     """
 
 @app.command()
-def install(descriptor: Annotated[Path, typer.Argument()] = Path('data.yaml')):
+def install(descriptor: Annotated[Path, typer.Argument()] = Path('data.yaml'), 
+            output_dir: Annotated[Path, typer.Option()] = Path('datapackages')):
     """
     Download data packages (descriptor and resources data files) listed in package.sources and saves into datapackages/
     """
     package = Package(descriptor)
-    extract_source_packages(package)
+    extract_source_packages(package, output_dir)

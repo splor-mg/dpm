@@ -17,12 +17,12 @@ def update_session_headers(session, source):
 
     return session
 
-def extract_source_packages(package):
+def extract_source_packages(package, output_dir):
     for source in package.resources:
         logger.info(f'Downloading source package {source.name}...')
-        extract_source_package(source)
+        extract_source_package(source, output_dir)
 
-def extract_source_package(source):
+def extract_source_package(source, output_dir):
 
 
     session = requests.Session()
@@ -32,7 +32,7 @@ def extract_source_package(source):
     with system.use_context(http_session=session):
         package = Package(source.path)
 
-    package_descriptor_path = Path('datapackages', source.name, 'datapackage.json')
+    package_descriptor_path = Path(output_dir, source.name, 'datapackage.json')
     package.dereference()
     package.to_json(package_descriptor_path)
 
