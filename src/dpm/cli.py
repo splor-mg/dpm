@@ -11,7 +11,7 @@ def callback():
     """
 
 @app.command()
-def install(descriptor: str = 'datapackage.yaml'):
+def install(descriptor: str = 'data.yaml'):
     """
     Download data packages (descriptor and resources data files) listed in package.sources and saves into datapackages/
     """
