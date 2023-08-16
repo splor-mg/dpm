@@ -1,25 +1,46 @@
 import requests
 import shutil
-from frictionless import Package
-from pathlib import Path
 import logging
+import os
+from frictionless import Package, system
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-def extract_source_packages(package):
-    for source in package.sources:
-        logger.info(f'Downloading source package {source["name"]}...')
-        extract_source_package(source)
+def update_session_headers(session, source):
 
-def extract_source_package(source):
-    package = Package(source['path'])
-    package_descriptor_path = Path('datapackages', source['name'], 'datapackage.json')
+    varenv_name = source.custom.get('token')
+    if varenv_name:
+        logger.info(f'Using token stored in {varenv_name} for accessing data package {source.name}')
+        token = os.getenv(varenv_name)
+        session.headers['Authorization'] = f"Bearer {token}"
+
+    return session
+
+def extract_source_packages(package, output_dir):
+    for source in package.resources:
+        logger.info(f'Downloading source package {source.name}...')
+        extract_source_package(source, output_dir)
+
+def extract_source_package(source, output_dir):
+
+
+    session = requests.Session()
+    # create a session and get the token if needed to auth a private repo
+    session = update_session_headers(session, source)
+
+    with system.use_context(http_session=session):
+        package = Package(source.path)
+
+    package_descriptor_path = Path(output_dir, source.name, 'datapackage.json')
     package.dereference()
     package.to_json(package_descriptor_path)
 
+
     for resource in package.resources:
         resource_remotepath = f'{resource.basepath}/{resource.path}'
-        response = requests.get(str(resource_remotepath), stream=True)
+
+        response = session.get(str(resource_remotepath), stream=True)
         response.raise_for_status()
 
         resource_path = Path(package_descriptor_path.parent, resource.path)

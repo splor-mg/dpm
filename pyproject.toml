@@ -1,12 +1,13 @@
 [project]
 name = "dpm"
-version = "0.0.0.9005"
+version = "0.0.0.9007"
 description = "A package for install, update and manage sources of sets of datapackages"
 readme = "README.md"
 dependencies = [
   'frictionless',
   'requests',
-  'typer'
+  'typer',
+  'unidecode'
 ]
 [build-system]
 requires = ["hatchling"]
