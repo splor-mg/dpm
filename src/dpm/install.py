@@ -9,24 +9,20 @@ logger = logging.getLogger(__name__)
 
 def update_session_headers(session, source):
 
-    varenv_name = source.get('token') if source.get('token') != None else ''
-
-    token = os.getenv(varenv_name)
-    print(f'source: {source["name"]} | varenv_name: {varenv_name} | token: {token}')
-
-    if token:
+    varenv_name = source.custom.get('token')
+    if varenv_name:
+        logger.info(f'Using token stored in {varenv_name} for accessing data package {source.name}')
+        token = os.getenv(varenv_name)
         session.headers['Authorization'] = f"Bearer {token}"
-        return session
-    else:
-        return session
 
+    return session
 
-def extract_source_packages(package):
-    for source in package.sources:
-        logger.info(f'Downloading source package {source["name"]}...')
-        extract_source_package(source)
+def extract_source_packages(package, output_dir):
+    for source in package.resources:
+        logger.info(f'Downloading source package {source.name}...')
+        extract_source_package(source, output_dir)
 
-def extract_source_package(source):
+def extract_source_package(source, output_dir):
 
 
     session = requests.Session()
@@ -34,9 +30,9 @@ def extract_source_package(source):
     session = update_session_headers(session, source)
 
     with system.use_context(http_session=session):
-        package = Package(source['path'] )
+        package = Package(source.path)
 
-    package_descriptor_path = Path('datapackages', source['name'], 'datapackage.json')
+    package_descriptor_path = Path(output_dir, source.name, 'datapackage.json')
     package.dereference()
     package.to_json(package_descriptor_path)
 
@@ -59,4 +55,3 @@ def extract_source_package(source):
             shutil.copyfileobj(response.raw, file)
 
         logger.info(f'Data file of resource {resource.name} saved in {resource_path}')
-
