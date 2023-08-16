@@ -1,6 +1,6 @@
-from frictionless import Step, Package, Resource, transform, steps, Field
+from frictionless import Step, Package, Resource, transform, steps, Field, fields
 from pathlib import Path
-from .utils import as_identifier
+from .utils import as_identifier, remove_field_properties
 import attrs
 import petl as etl
 
@@ -94,10 +94,17 @@ class table_write_normalized(Step):
         resource.extrapaths = None
         resource.infer(stats=True)
         for field in resource.schema.fields:
-            field.format = None
-            field.missing_values = None
-            field.true_values = None
-            field.false_values = None
-            field.group_char = None
-            field.decimal_char = None
-            field.bare_number = None
+            if isinstance(field, fields.NumberField):
+                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'groupChar', 'decimalChar', 'bareNumber'])
+            elif isinstance(field, fields.BooleanField):
+                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'trueValues', 'falseValues'])
+            elif isinstance(field, fields.IntegerField):
+                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'bareNumber'])
+            elif isinstance(field, fields.DateField):
+                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'format'])
+            elif isinstance(field, fields.TimeField):
+                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'format'])
+            elif isinstance(field, fields.DatetimeField):
+                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'format'])
+            else:
+                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues'])
