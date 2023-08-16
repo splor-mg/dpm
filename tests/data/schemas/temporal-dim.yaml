@@ -1,0 +1,30 @@
+fields:
+  - name: Unidade Orçamentária - Código
+    target: uo_cod
+    type: integer
+    constraints:
+      required: true
+  - name: uo_desc
+    type: string
+    missingValues:
+       - NA
+  - name: Vigente?
+    target: valid
+    type: boolean
+    trueValues: ['Sim']
+    falseValues: ['Não']
+  - name: VALID_FROM
+    type: date
+    format: '%d/%m/%Y'
+  - name: Valid_to
+    type: date
+    format: '%d/%m/%Y'
+    description: |
+      This is a big and nice description
+  - name: Updated at
+    type: datetime
+    format: '%d/%m/%Y %H:%M:%S'
+primaryKey:
+  - Unidade Orçamentária - Código
+  - VALID_FROM
+  - Valid_to
