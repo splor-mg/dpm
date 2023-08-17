@@ -87,13 +87,12 @@ class table_write_normalized(Step):
         
         path.parent.mkdir(parents=True, exist_ok=True)
         resource_copy.to_petl().tocsv(path, encoding = 'utf-8')
-        resource.profile = 'tabular-data-resource'
         resource.path = str(path)
+        resource.profile = 'tabular-data-resource'
         resource.encoding = 'utf-8'
         resource.format = 'csv'
-        resource.scheme = 'file'
         resource.dialect = Dialect()
-        resource.infer(stats=True)
+        resource.scheme = 'file'
         for field in resource.schema.fields:
             if isinstance(field, fields.NumberField):
                 resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'groupChar', 'decimalChar', 'bareNumber'])
