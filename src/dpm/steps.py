@@ -127,13 +127,13 @@ class resource_normalize(Step):
 
         resource.schema.primary_key = []
         resource.schema.foreign_keys = []
-
+        
         for field in resource.schema.fields:
             if not field.custom.get('target'):
                 field.custom['target'] = as_identifier(field.name)
             target = field.custom['target']
             descriptor = {'name': target, 'source': field.name}
-            resource.schema.update_field(field.name, descriptor)
+            transform(resource, steps=[steps.field_update(name = field.name, descriptor = descriptor)])
             resource.schema.get_field(target).custom.pop('target')
         
         resource_copy = resource.to_copy()
