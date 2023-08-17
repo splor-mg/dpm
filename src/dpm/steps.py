@@ -1,4 +1,4 @@
-from frictionless import Step, Package, Resource, transform, steps, Field, fields
+from frictionless import Step, Package, Resource, transform, steps, Field, fields, Dialect
 from pathlib import Path
 from .utils import as_identifier, remove_field_properties
 import attrs
@@ -73,7 +73,9 @@ class table_write_normalized(Step):
 
     def transform_resource(self, resource: Resource):
         
-        transform(resource, steps=[steps.table_normalize()])
+        resource_copy = resource.to_copy()
+
+        transform(resource_copy, steps=[steps.table_normalize()])
         if self.path is not None and self.output_dir is not None:
             raise ValueError("Only one of 'path' or 'output_dir' can be specified")
         if self.path is None and self.output_dir is None:
@@ -84,14 +86,13 @@ class table_write_normalized(Step):
             path = Path(self.path)
         
         path.parent.mkdir(parents=True, exist_ok=True)
-        resource.to_petl().tocsv(path, encoding = 'utf-8')
+        resource_copy.to_petl().tocsv(path, encoding = 'utf-8')
         resource.profile = 'tabular-data-resource'
-        resource.data = None
         resource.path = str(path)
         resource.encoding = 'utf-8'
         resource.format = 'csv'
         resource.scheme = 'file'
-        resource.extrapaths = None
+        resource.dialect = Dialect()
         resource.infer(stats=True)
         for field in resource.schema.fields:
             if isinstance(field, fields.NumberField):
