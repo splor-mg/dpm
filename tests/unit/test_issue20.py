@@ -2,7 +2,7 @@ from frictionless import Resource, Pipeline, steps
 from dpm.steps import field_rename_to_target, table_write_normalized
 from datetime import date, datetime
 
-def test_step_field_rename_to_target(tmp_path):
+def test_multiple_custom_steps(tmp_path):
     resource = Resource('tests/data/temporal-dim.yaml')
     
     output_dir = str(tmp_path / 'build')
