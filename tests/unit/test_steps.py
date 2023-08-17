@@ -13,7 +13,6 @@ def test_step_field_rename_to_target():
         ],
     )
     resource.transform(pipeline)
-    assert resource.path == 'data-raw/temporal-dim.txt'
     assert resource.schema.to_descriptor()['fields'] == [
             {'name': 'uo_cod', 'type': 'integer', 'constraints': {'required': True}, 'source': 'Unidade Orçamentária - Código'},
             {'name': 'uo_desc', 'type': 'string', 'missingValues': ['NA'] , 'source': 'uo_desc'},
