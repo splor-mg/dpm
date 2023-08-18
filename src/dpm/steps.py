@@ -109,57 +109,46 @@ class table_write_normalized(Step):
             else:
                 resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues'])
 
-@attrs.define(kw_only=True, repr=False)
-class resource_normalize(Step):
-    path: str = None
-    output_dir: str = None
+def normalize_resource(resource, path):
 
-    def transform_resource(self, resource: Resource):
-        
-        if self.path is not None and self.output_dir is not None:
-            raise ValueError("Only one of 'path' or 'output_dir' can be specified")
-        if self.path is None and self.output_dir is None:
-            raise ValueError("One of 'path' or 'output_dir' must be specified")
-        if self.output_dir:
-            path = Path(f'{self.output_dir}/{Path(resource.name).stem}.csv')
+    resource = resource.to_copy()
+    path = Path(path)
+    
+    for field in resource.schema.fields:
+        if not field.custom.get('target'):
+            field.custom['target'] = as_identifier(field.name)
+        target = field.custom['target']
+        field_descriptor = {'name': target, 'source': field.name}
+        transform(resource, steps=[steps.field_update(name = field.name, descriptor = field_descriptor)])
+        resource.schema.get_field(target).custom.pop('target')
+    
+    transform(resource, steps=[steps.table_normalize()])
+    
+    path.parent.mkdir(parents=True, exist_ok=True)
+    resource.to_petl().tocsv(path, encoding = 'utf-8')
+    
+    resource.path = str(path)
+    resource.profile = 'tabular-data-resource'
+    resource.encoding = 'utf-8'
+    resource.format = 'csv'
+    for field in resource.schema.fields:
+        if isinstance(field, fields.NumberField):
+            resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'groupChar', 'decimalChar', 'bareNumber'])
+        elif isinstance(field, fields.BooleanField):
+            resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'trueValues', 'falseValues'])
+        elif isinstance(field, fields.IntegerField):
+            resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'bareNumber'])
+        elif isinstance(field, fields.DateField):
+            resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'format'])
+        elif isinstance(field, fields.TimeField):
+            resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'format'])
+        elif isinstance(field, fields.DatetimeField):
+            resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'format'])
         else:
-            path = Path(self.path)
-
-        resource.schema.primary_key = []
-        resource.schema.foreign_keys = []
-        
-        for field in resource.schema.fields:
-            if not field.custom.get('target'):
-                field.custom['target'] = as_identifier(field.name)
-            target = field.custom['target']
-            descriptor = {'name': target, 'source': field.name}
-            transform(resource, steps=[steps.field_update(name = field.name, descriptor = descriptor)])
-            resource.schema.get_field(target).custom.pop('target')
-        
-        resource_copy = resource.to_copy()
-        transform(resource_copy, steps=[steps.table_normalize()])
-        
-        path.parent.mkdir(parents=True, exist_ok=True)
-        resource_copy.to_petl().tocsv(path, encoding = 'utf-8')
-        
-        resource.path = str(path)
-        resource.profile = 'tabular-data-resource'
-        resource.encoding = 'utf-8'
-        resource.format = 'csv'
-        resource.dialect = Dialect()
-        resource.scheme = 'file'
-        for field in resource.schema.fields:
-            if isinstance(field, fields.NumberField):
-                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'groupChar', 'decimalChar', 'bareNumber'])
-            elif isinstance(field, fields.BooleanField):
-                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'trueValues', 'falseValues'])
-            elif isinstance(field, fields.IntegerField):
-                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'bareNumber'])
-            elif isinstance(field, fields.DateField):
-                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'format'])
-            elif isinstance(field, fields.TimeField):
-                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'format'])
-            elif isinstance(field, fields.DatetimeField):
-                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues', 'format'])
-            else:
-                resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues'])
+            resource.schema = remove_field_properties(resource.schema, field.name, ['missingValues'])
+    
+    resource_descriptor = resource.to_descriptor()
+    resource_descriptor.pop('data', None)
+    resource_descriptor.pop('extrapaths', None)
+    resource_descriptor.pop('dialect', None)
+    return Resource.from_descriptor(resource_descriptor)
