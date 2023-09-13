@@ -3,6 +3,7 @@ from typing_extensions import Annotated
 from frictionless import Package
 from dpm.install import extract_source_packages
 from pathlib import Path
+from dpm.diff import diff_schema
 
 app = typer.Typer()
 
@@ -20,3 +21,10 @@ def install(descriptor: Annotated[Path, typer.Argument()] = Path('data.yaml'),
     """
     package = Package(descriptor)
     extract_source_packages(package, output_dir)
+
+@app.command()
+def diff(source: str, target: str, resource_name: str):
+    source_package = Package(source)
+    target_package = Package(target)
+    diff_schema(source_package, target_package, resource_name)
+    
