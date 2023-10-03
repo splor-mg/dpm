@@ -1,4 +1,5 @@
 import typer
+import tomllib
 from typing_extensions import Annotated
 from frictionless import Package
 from dpm.install import extract_source_packages
@@ -18,5 +19,8 @@ def install(descriptor: Annotated[Path, typer.Argument()] = Path('data.yaml'),
     """
     Download data packages (descriptor and resources data files) listed in package.sources and saves into datapackages/
     """
-    package = Package(descriptor)
-    extract_source_packages(package, output_dir)
+
+    with open("data.toml", "rb") as f:
+        data_toml = tomllib.load(f)
+
+    extract_source_packages(data_toml, output_dir)
