@@ -1,4 +1,7 @@
 pytest
 coverage
 pytest-cov
-tomllib
+frictionless==5.16.0
+sqlalchemy==2.0.14
+python-dotenv==1.0.0
+-e c:/projects/dpm/
