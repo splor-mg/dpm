@@ -18,7 +18,7 @@ def update_session_headers(session, source):
     return session
 
 def extract_source_packages(toml_package, output_dir):
-    for _, source in toml_package["packages"]:
+    for _, source in toml_package["packages"].items():
         logger.info(f'Downloading source package {source["name"]}...')
         extract_source_package(source, output_dir)
 
