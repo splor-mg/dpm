@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 def update_session_headers(session, source):
 
-    varenv_name = source['token']
+    varenv_name = source.get('token', None)
     if varenv_name:
         logger.info(f'Using token stored in {varenv_name} for accessing data package {source["name"]}')
         token = os.getenv(varenv_name)
