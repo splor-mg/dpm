@@ -1,7 +1,6 @@
 import typer
 import tomllib
 from typing_extensions import Annotated
-from frictionless import Package
 from dpm.install import extract_source_packages
 from pathlib import Path
 
