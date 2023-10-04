@@ -1,7 +1,7 @@
+typer
 pytest
 coverage
 pytest-cov
 frictionless==5.16.0
-sqlalchemy==2.0.14
-python-dotenv==1.0.0
+tomli >= 1.1.0 ; python_version < "3.11"
 -e c:/projects/dpm/

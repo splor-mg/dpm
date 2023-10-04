@@ -1,8 +1,12 @@
 import typer
-import tomllib
 from typing_extensions import Annotated
 from dpm.install import extract_source_packages
 from pathlib import Path
+try:
+    import tomllib
+except ModuleNotFoundError:
+    import tomli as tomllib
+
 
 app = typer.Typer()
 
