@@ -2,6 +2,6 @@ typer
 pytest
 coverage
 pytest-cov
-frictionless==5.16.0
+frictionless
 tomli >= 1.1.0 ; python_version < "3.11"
--e c:/projects/dpm/
+-e .

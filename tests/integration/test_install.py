@@ -4,7 +4,7 @@ from dpm.cli import app
 runner = CliRunner()
 
 def test_app(tmp_path):
-        result = runner.invoke(app, ['install', 'tests/data/data.yaml', '--output-dir', str(tmp_path)])
+        result = runner.invoke(app, ['install', 'tests/data/data.toml', '--output-dir', str(tmp_path)])
         expected_files = [f'{str(tmp_path)}/reprex-excel', 
                           f'{str(tmp_path)}/transparencia-reprex-foreignkey', 
                           f'{str(tmp_path)}/reprex-excel/missing_date.xlsx', 
