@@ -19,26 +19,26 @@ def test_resource_normalize():
                                                   'type': 'integer',
                                                   'constraints': {'required': True},
                                                   'source': 'Unidade Orçamentária - Código'},
-                                              {'name': 'uo_desc',
+                                              {'name': 'UO_DESC',
                                                   'type': 'string',
                                                   'source': 'uo_desc'},
                                               {'name': 'valid',
                                                   'type': 'boolean',
                                                   'source': 'Vigente?'},
-                                              {'name': 'valid_from',
+                                              {'name': 'VALID_FROM',
                                                   'type': 'date',
                                                   'source': 'VALID_FROM'},
-                                              {'name': 'valid_to',
+                                              {'name': 'VALID_TO',
                                                   'type': 'date',
                                                   'description': 'This is a big and nice description\n',
                                                   'source': 'Valid_to'},
-                                              {'name': 'updated_at',
+                                              {'name': 'UPDATED_AT',
                                                   'type': 'datetime',
                                                   'source': 'Updated at'}],
-                                      'primaryKey': ['uo_cod', 'valid_from', 'valid_to']}}
+                                      'primaryKey': ['uo_cod', 'VALID_FROM', 'VALID_TO']}}
     assert target.read_rows() == [
-    {'uo_cod': 1501, 'uo_desc': 'Planejamento e Gestão', 'valid': False, 'valid_from': date(1995, 1, 1), 'valid_to': date(2002, 1, 1), 'updated_at': datetime(1994, 11, 30, 9, 45)}, 
-    {'uo_cod': 1501, 'uo_desc': 'SEPLAG', 'valid': True, 'valid_from': date(2002, 1, 1), 'valid_to': date(9999, 12, 31), 'updated_at': datetime(2002, 9, 30, 10, 45)}, 
-    {'uo_cod': 1251, 'uo_desc': None, 'valid': True, 'valid_from': date(2002, 1, 1), 'valid_to': date(9999, 12, 31), 'updated_at': datetime(2002, 9, 30, 10, 45)}, 
-    {'uo_cod': 1251, 'uo_desc': 'PMMG', 'valid': True, 'valid_from': date(2002, 1, 1), 'valid_to': date(9999, 12, 31), 'updated_at': datetime(2002, 9, 30, 10, 43)}
+    {'uo_cod': 1501, 'UO_DESC': 'Planejamento e Gestão', 'valid': False, 'VALID_FROM': date(1995, 1, 1), 'VALID_TO': date(2002, 1, 1), 'UPDATED_AT': datetime(1994, 11, 30, 9, 45)}, 
+    {'uo_cod': 1501, 'UO_DESC': 'SEPLAG', 'valid': True, 'VALID_FROM': date(2002, 1, 1), 'VALID_TO': date(9999, 12, 31), 'UPDATED_AT': datetime(2002, 9, 30, 10, 45)}, 
+    {'uo_cod': 1251, 'UO_DESC': None, 'valid': True, 'VALID_FROM': date(2002, 1, 1), 'VALID_TO': date(9999, 12, 31), 'UPDATED_AT': datetime(2002, 9, 30, 10, 45)}, 
+    {'uo_cod': 1251, 'UO_DESC': 'PMMG', 'valid': True, 'VALID_FROM': date(2002, 1, 1), 'VALID_TO': date(9999, 12, 31), 'UPDATED_AT': datetime(2002, 9, 30, 10, 43)}
 ]

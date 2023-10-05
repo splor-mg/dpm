@@ -15,11 +15,11 @@ def test_step_field_rename_to_target():
     resource.transform(pipeline)
     assert resource.schema.to_descriptor()['fields'] == [
             {'name': 'uo_cod', 'type': 'integer', 'constraints': {'required': True}, 'source': 'Unidade Orçamentária - Código'},
-            {'name': 'uo_desc', 'type': 'string', 'missingValues': ['NA'] , 'source': 'uo_desc'},
+            {'name': 'UO_DESC', 'type': 'string', 'missingValues': ['NA'] , 'source': 'uo_desc'},
             {'name': 'valid', 'type': 'boolean', 'trueValues': ['Sim'], 'falseValues': ['Não'], 'source': 'Vigente?'},
-            {'name': 'valid_from', 'type': 'date', 'format': '%d/%m/%Y', 'source': 'VALID_FROM'},
-            {'name': 'valid_to', 'type': 'date', 'description': 'This is a big and nice description\n', 'format': '%d/%m/%Y', 'source': 'Valid_to'},
-            {'name': 'updated_at', 'type': 'datetime', 'format': '%d/%m/%Y %H:%M:%S', 'source': 'Updated at'}
+            {'name': 'VALID_FROM', 'type': 'date', 'format': '%d/%m/%Y', 'source': 'VALID_FROM'},
+            {'name': 'VALID_TO', 'type': 'date', 'description': 'This is a big and nice description\n', 'format': '%d/%m/%Y', 'source': 'Valid_to'},
+            {'name': 'UPDATED_AT', 'type': 'datetime', 'format': '%d/%m/%Y %H:%M:%S', 'source': 'Updated at'}
         ]
 
 def test_step_table_write_normalized(tmp_path):
