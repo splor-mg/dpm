@@ -37,22 +37,25 @@ def extract_source_package(source, output_dir):
     package.dereference()
     package.to_json(package_descriptor_path)
 
+    fetch_resources = source.get('resources', package.resource_names)
 
     for resource in package.resources:
-        resource_remotepath = f'{resource.basepath}/{resource.path}'
+        if resource.name in fetch_resources:
 
-        response = session.get(str(resource_remotepath), stream=True)
-        response.raise_for_status()
+            resource_remotepath = f'{resource.basepath}/{resource.path}'
 
-        resource_path = Path(package_descriptor_path.parent, resource.path)
-        resource_path.parent.mkdir(parents=True, exist_ok=True)
+            response = session.get(str(resource_remotepath), stream=True)
+            response.raise_for_status()
 
-        if 'text' in resource.mediatype:
-            response.raw.decode_content = True
-        else:
-            response.raw.decode_content = False
+            resource_path = Path(package_descriptor_path.parent, resource.path)
+            resource_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(resource_path, 'wb') as file:
-            shutil.copyfileobj(response.raw, file)
+            if 'text' in resource.mediatype:
+                response.raw.decode_content = True
+            else:
+                response.raw.decode_content = False
 
-        logger.info(f'Data file of resource {resource.name} saved in {resource_path}')
+            with open(resource_path, 'wb') as file:
+                shutil.copyfileobj(response.raw, file)
+
+            logger.info(f'Data file of resource {resource.name} saved in {resource_path}')
