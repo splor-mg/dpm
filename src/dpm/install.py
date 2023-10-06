@@ -9,17 +9,18 @@ logger = logging.getLogger(__name__)
 
 def update_session_headers(session, source):
 
-    varenv_name = source.custom.get('token')
+    varenv_name = source.get('token', None)
     if varenv_name:
-        logger.info(f'Using token stored in {varenv_name} for accessing data package {source.name}')
+        logger.info(f'Using token stored in {varenv_name} for accessing data package {source["name"]}')
         token = os.getenv(varenv_name)
         session.headers['Authorization'] = f"Bearer {token}"
 
     return session
 
-def extract_source_packages(package, output_dir):
-    for source in package.resources:
-        logger.info(f'Downloading source package {source.name}...')
+def extract_source_packages(toml_package, output_dir):
+    for key, source in toml_package["packages"].items():
+        source["name"] = key
+        logger.info(f'Downloading source package {source["name"]}...')
         extract_source_package(source, output_dir)
 
 def extract_source_package(source, output_dir):
@@ -30,9 +31,9 @@ def extract_source_package(source, output_dir):
     session = update_session_headers(session, source)
 
     with system.use_context(http_session=session):
-        package = Package(source.path)
+        package = Package(source["path"])
 
-    package_descriptor_path = Path(output_dir, source.name, 'datapackage.json')
+    package_descriptor_path = Path(output_dir, source["name"], 'datapackage.json')
     package.dereference()
     package.to_json(package_descriptor_path)
 
