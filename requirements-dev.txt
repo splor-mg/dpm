@@ -1,7 +1,4 @@
-typer
 pytest
 coverage
 pytest-cov
-frictionless
-tomli >= 1.1.0 ; python_version < "3.11"
 -e .
