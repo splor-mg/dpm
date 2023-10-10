@@ -35,10 +35,14 @@ def extract_source_package(source, output_dir):
 
     package_descriptor_path = Path(output_dir, source["name"], 'datapackage.json')
     package.dereference()
-    package.to_json(package_descriptor_path)
+
 
     fetch_resources = source.get('resources', package.resource_names)
 
+    for res in [res for res in package.resource_names if res not in fetch_resources]:
+        package.remove_resource(res)
+
+    package.to_json(package_descriptor_path)
 
     for resource_name in fetch_resources:
         if resource_name in package.resource_names:
@@ -64,5 +68,5 @@ def extract_source_package(source, output_dir):
             logger.info(f'Data file of resource {resource.name} saved in {resource_path}')
 
         else:
-            logger.info(f'WARNING: Resource "{resource_name}" was not found in {package.name} resources. '
+            logger.warning(f'Resource "{resource_name}" was not found in {package.name} resources. '
                         f'Please check fetch_resources field in data.toml file')
