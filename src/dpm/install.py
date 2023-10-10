@@ -39,8 +39,11 @@ def extract_source_package(source, output_dir):
 
     fetch_resources = source.get('resources', package.resource_names)
 
-    for resource in package.resources:
-        if resource.name in fetch_resources:
+
+    for resource_name in fetch_resources:
+        if resource_name in package.resource_names:
+
+            resource = package.get_resource(resource_name)
 
             resource_remotepath = f'{resource.basepath}/{resource.path}'
 
@@ -59,3 +62,7 @@ def extract_source_package(source, output_dir):
                 shutil.copyfileobj(response.raw, file)
 
             logger.info(f'Data file of resource {resource.name} saved in {resource_path}')
+
+        else:
+            logger.info(f'WARNING: Resource "{resource_name}" was not found in {package.name} resources. '
+                        f'Please check fetch_resources field in data.toml file')
