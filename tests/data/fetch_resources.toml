@@ -1,22 +1,22 @@
-title = "Data Dependencies"
+title = "spreadmart"
 
 [packages]
 
-[packages.obz-dados]
-path = "https://raw.githubusercontent.com/splor-mg/obz-dados/main/datapackage.json"
-token = "GITHUB_TOKEN"
+[packages.regular-install]
+path = "https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json"
 
-[packages.teto-gastos-rrf-dados]
-path = "https://raw.githubusercontent.com/splor-mg/teto-gastos-rrf-dados/main/datapackage.json?"
+[packages.fetch-one-resource]
+path =  "https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json"
+resources = ["estados"]
+
+[packages.empty-fetch-list]
+path =  "https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json"
 resources = []
-token = "GITHUB_TOKEN"
 
-[packages.reestimativa-dados]
-path = "https://raw.githubusercontent.com/splor-mg/reestimativa-dados/obz/datapackage.yaml"
-resources = ["reest_rec"]
-token = "GITHUB_TOKEN"
+[packages.invalid-fetch-only]
+path =  "https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json"
+resources = ["foo", "bar"]
 
-[packages.sisor-dados-2024]
-path = "https://raw.githubusercontent.com/splor-mg/sisor-dados-2024/main/datapackage.json"
-resources = ["base_categoria_pessoal", "base_qdd_fiscal", "foo"]
-token = "GITHUB_TOKEN"
+[packages.valid-invalid-fetch]
+path =  "https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json"
+resources = ["foo", "bar", "estados"]

@@ -42,7 +42,14 @@ def extract_source_package(source, output_dir):
     for res in [res for res in package.resource_names if res not in fetch_resources]:
         package.remove_resource(res)
 
+
+
     package.to_json(package_descriptor_path)
+
+    if package.resources == []:
+        logger.warning(f'None of the listed resources were found in "{package.name}". '
+                       f'Please check your data.toml file.')
+        return
 
     for resource_name in fetch_resources:
         if resource_name in package.resource_names:
@@ -65,8 +72,9 @@ def extract_source_package(source, output_dir):
             with open(resource_path, 'wb') as file:
                 shutil.copyfileobj(response.raw, file)
 
-            logger.info(f'Data file of resource {resource.name} saved in {resource_path}')
+            logger.info(f'Data file of resource "{resource.name}" saved in "{resource_path}"')
 
         else:
-            logger.warning(f'Resource "{resource_name}" was not found in {package.name} resources. '
-                        f'Please check fetch_resources field in data.toml file')
+            logger.warning(f'Resource "{resource_name}" was not found in "{package.name}" resources. '
+                        f'Please check `resources` field in `data.toml` file.')
+
