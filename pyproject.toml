@@ -4,10 +4,11 @@ version = "0.0.0-9008"
 description = "A package for install, update and manage sources of sets of datapackages"
 readme = "README.md"
 dependencies = [
-  'frictionless',
+  'frictionless[sql, postgresql, duckdb]',
   'requests',
   'typer',
   'unidecode',
+  'python-dotenv',
   'tomli >= 1.1.0 ; python_version < "3.11"'
 ]
 [build-system]
