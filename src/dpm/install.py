@@ -20,7 +20,7 @@ def update_session_headers(session, source):
 def extract_source_packages(toml_package, output_dir):
     for key, source in toml_package["packages"].items():
         source["name"] = key
-        logger.info(f'Downloading package {source["name"]}...')
+        logger.info(f'Downloading package {source["name"]}....')
         extract_source_package(source, output_dir)
 
 def extract_source_package(source, output_dir):
