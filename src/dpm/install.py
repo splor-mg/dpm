@@ -20,7 +20,7 @@ def update_session_headers(session, source):
 def extract_source_packages(toml_package, output_dir):
     for key, source in toml_package["packages"].items():
         source["name"] = key
-        logger.info(f'Downloading source package {source["name"]}...')
+        logger.info(f'Downloading package {source["name"]}...')
         extract_source_package(source, output_dir)
 
 def extract_source_package(source, output_dir):
@@ -47,7 +47,7 @@ def extract_source_package(source, output_dir):
     package.to_json(package_descriptor_path)
 
     if package.resources == []:
-        logger.warning(f'None of the listed resources were found in "{package.name}". '
+        logger.warning(f'All resources were not found for package "{package["name"]}". '
                        f'Please check your data.toml file.')
         return
 
@@ -75,6 +75,6 @@ def extract_source_package(source, output_dir):
             logger.info(f'Data file of resource "{resource.name}" saved in "{resource_path}"')
 
         else:
-            logger.warning(f'Resource "{resource_name}" was not found in "{package.name}" resources. '
-                        f'Please check `resources` field in `data.toml` file.')
+            logger.warning(f'Resource "{resource_name}" not found for package "{package.name}". '
+                        f'Please check your `data.toml` file.')
 
