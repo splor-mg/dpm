@@ -47,7 +47,7 @@ def extract_source_package(source, output_dir):
     package.to_json(package_descriptor_path)
 
     if package.resources == []:
-        logger.warning(f'All resources were not found for package "{package["name"]}". '
+        logger.warning(f'All resources were not found for package "{source["name"]}". '
                        f'Please check your data.toml file.')
         return
 
