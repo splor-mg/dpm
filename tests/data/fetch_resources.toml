@@ -1,0 +1,22 @@
+title = "spreadmart"
+
+[packages]
+
+[packages.regular-install]
+path = "https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json"
+
+[packages.fetch-one-resource]
+path =  "https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json"
+resources = ["estados"]
+
+[packages.empty-fetch-list]
+path =  "https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json"
+resources = []
+
+[packages.invalid-fetch-only]
+path =  "https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json"
+resources = ["foo", "bar"]
+
+[packages.valid-invalid-fetch]
+path =  "https://raw.githubusercontent.com/transparencia-mg/datapackage-reprex/foreign-key-constraint/datapackage.json"
+resources = ["foo", "bar", "estados"]
