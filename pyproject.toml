@@ -6,7 +6,7 @@ readme = "README.md"
 dependencies = [
   'frictionless[sql, postgresql, duckdb]',
   'requests',
-  'typer',
+  'typer >= 0.9',
   'unidecode',
   'python-dotenv',
   'tomli >= 1.1.0 ; python_version < "3.11"'
