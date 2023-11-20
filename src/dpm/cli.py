@@ -3,6 +3,9 @@ from typing_extensions import Annotated
 from frictionless import Package
 from pathlib import Path
 import logging
+from typing import Optional
+from typing_extensions import Annotated
+import importlib.metadata
 try:
     import tomllib
 except ModuleNotFoundError:
@@ -14,8 +17,16 @@ logger = logging.getLogger(__name__)
 
 app = typer.Typer()
 
+def version_callback(value: bool):
+    if value:
+        print(f"dpm, version {importlib.metadata.version('dpm')}")
+        raise typer.Exit()
+
 @app.callback()
-def callback():
+def main(version: Annotated[
+        Optional[bool],
+        typer.Option("--version", callback=version_callback, is_eager=True),
+    ] = None,):
     """
     Data package manager to install, update and remove data dependencies.
     """
