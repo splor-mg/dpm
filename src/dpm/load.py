@@ -22,13 +22,13 @@ def create_database_table(package_id, resource):
     table = mapper.write_schema(resource.schema, table_name = resource.name)
     table.to_metadata(metadata)
 
-    bigint_fields = [
+    is_integer_field = [
         field.name 
         for field in resource.schema.fields 
-        if isinstance(field, frictionless.fields.IntegerField) and field.custom.get('bigint')
+        if isinstance(field, frictionless.fields.IntegerField)
     ]
     
-    for field in bigint_fields:
+    for field in is_integer_field:
         sa.Table(resource.name, metadata, sa.Column(field, sa.BigInteger), extend_existing=True)
     metadata.create_all(engine, tables=[metadata.tables[f'{package_id}.{resource.name}']])
 
