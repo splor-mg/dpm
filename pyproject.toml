@@ -4,13 +4,19 @@ version = "0.0.0-9008"
 description = "A package for install, update and manage sources of sets of datapackages"
 readme = "README.md"
 dependencies = [
-  'frictionless[sql, postgresql, duckdb]',
+  'frictionless',
   'requests',
   'typer >= 0.9',
   'unidecode',
   'python-dotenv',
   'tomli >= 1.1.0 ; python_version < "3.11"'
 ]
+
+[project.optional-dependencies]
+sql = ["frictionless[sql]"]
+postgresql = ["frictionless[postgresql]"]
+duckdb = ["frictionless[duckdb]"]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
