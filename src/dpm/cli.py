@@ -11,7 +11,10 @@ try:
 except ModuleNotFoundError:
     import tomli as tomllib
 from dpm.install import extract_source_packages
-from dpm.load import read_manifest, load_package, create_if_not_exists_control_table
+try:
+    from dpm.load import read_manifest, load_package, create_if_not_exists_control_table
+except ModuleNotFoundError:
+    pass
 
 logger = logging.getLogger(__name__)
 
