@@ -2,10 +2,14 @@ import re
 from unidecode import unidecode
 from frictionless import Schema
 
-def as_identifier(x): 
-    x = unidecode(x) 
-    ret = re.sub('\W|^(?=\d)','_', x).lower()
-    return ret
+def as_identifier(x, case=str.upper): 
+    result = unidecode(x) 
+    result = re.sub(r'\([^)]*\)', '', result)  # Remove all characters within parentheses
+    result = result.replace('\u00a0', ' ')  # Replace non-breaking space with regular space
+    result = re.sub('\W|^(?=\d)','_', result)
+    result = re.sub('_+', '_', result)
+    result = case(result)
+    return result.strip('_')
 
 def remove_field_properties(schema, field_name, properties):
     schema_descriptor = schema.to_descriptor()
