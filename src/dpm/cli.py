@@ -15,8 +15,10 @@ try:
     from dpm.load import read_manifest, load_package, create_if_not_exists_control_table
 except ModuleNotFoundError:
     pass
+from dpm.diff import diff_schema
 
 logger = logging.getLogger(__name__)
+
 
 app = typer.Typer()
 
@@ -66,3 +68,10 @@ def load(manifest: Annotated[Path, typer.Argument()] = Path('data.toml'),
             path = Path('datapackages') / pkg_id / 'datapackage.json'
             package = Package(path)
             load_package(pkg_id, package)
+
+@app.command()
+def diff(source: str, target: str, resource_name: str):
+    source_package = Package(source)
+    target_package = Package(target)
+    diff_schema(source_package, target_package, resource_name)
+    
