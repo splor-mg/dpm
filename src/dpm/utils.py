@@ -2,7 +2,7 @@ import re
 from unidecode import unidecode
 from frictionless import Schema
 
-def as_identifier(x, case=str.upper): 
+def as_identifier(x, case=str.lower): 
     result = unidecode(x) 
     result = re.sub(r'\([^)]*\)', '', result)  # Remove all characters within parentheses
     result = result.replace('\u00a0', ' ')  # Replace non-breaking space with regular space
