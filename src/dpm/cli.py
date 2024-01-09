@@ -6,7 +6,8 @@ import logging
 from typing import Optional
 from typing_extensions import Annotated
 import importlib.metadata
-
+from itertools import chain
+from .utils import read_datapackage
 try:
     import tomllib
 except ModuleNotFoundError:
@@ -89,6 +90,8 @@ def _validate_enrich_option(option):
 @app.command()
 def concat(
     pattern: Annotated[Optional[str], typer.Argument()] = None,
+    package: Annotated[list[str], typer.Option()] = None,
+    resource_name: Annotated[list[str], typer.Option()] = None,
     enrich: Annotated[
         list[str],
         typer.Option(
@@ -103,4 +106,11 @@ def concat(
     packages = []
     if pattern:
         packages = sorted(Path('.').glob(pattern))
-    print(packages)
+    packages.extend(package)
+    packages = [read_datapackage(package) for package in packages]
+    if not resource_name:
+        resource_names = set.intersection(*[set(package._package.resource_names) for package in packages])
+    if not resource_names:
+        print("There are no resources with the same name in all packages to concatenate...")
+        typer.Exit(code=0)
+    print(f"Concatenating resources: {', '.join(resource_names)}")
