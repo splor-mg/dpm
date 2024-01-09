@@ -17,6 +17,11 @@ dependencies = [
 sql = ["frictionless[sql]"]
 postgresql = ["frictionless[postgresql]"]
 duckdb = ["frictionless[duckdb]"]
+dev = [
+    "pytest",
+    "coverage",
+    "pytest-cov",
+]
 
 [build-system]
 requires = ["hatchling"]
