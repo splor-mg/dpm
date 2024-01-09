@@ -8,6 +8,7 @@ from typing_extensions import Annotated
 import importlib.metadata
 from itertools import chain
 from .utils import read_datapackage
+import dpm.concat
 try:
     import tomllib
 except ModuleNotFoundError:
@@ -101,8 +102,8 @@ def concat(
             callback=_validate_enrich_option
         ),
     ] = None,
+    output_dir: Annotated[Path, typer.Option()] = Path('data'),
 ):
-    enrich = dict(pair.split('=') for pair in enrich)
     packages = []
     if pattern:
         packages = sorted(Path('.').glob(pattern))
@@ -113,4 +114,9 @@ def concat(
     if not resource_names:
         print("There are no resources with the same name in all packages to concatenate...")
         typer.Exit(code=0)
+    id_cols = dict(pair.split('=') for pair in enrich)
+    output_dir.mkdir(parents=True, exist_ok=True)
     print(f"Concatenating resources: {', '.join(resource_names)}")
+    for resource_name in resource_names:
+        df = dpm.concat.concat(*packages, resource_name = resource_name, id_cols = id_cols)
+        df.to_csv(output_dir / f'{resource_name}.csv', index=False, encoding='utf-8')
