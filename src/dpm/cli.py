@@ -88,6 +88,7 @@ def _validate_enrich_option(option):
 
 @app.command()
 def concat(
+    pattern: Annotated[Optional[str], typer.Argument()] = None,
     enrich: Annotated[
         list[str],
         typer.Option(
@@ -99,4 +100,7 @@ def concat(
     ] = None,
 ):
     enrich = dict(pair.split('=') for pair in enrich)
-    print(enrich)
+    packages = []
+    if pattern:
+        packages = sorted(Path('.').glob(pattern))
+    print(packages)
