@@ -18,6 +18,7 @@ jobs:
         with:
           python-version: ${{ matrix.py-version }}
       - run: python -m pip install .[dev]
+      - run: pytest
       - run: make coverage
       - name: Use Codecov to track coverage
         if: matrix.os == 'ubuntu-latest' && matrix.py-version == '3.12'
