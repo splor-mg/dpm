@@ -5,6 +5,7 @@ description = "A package for install, update and manage sources of sets of datap
 readme = "README.md"
 dependencies = [
   'frictionless',
+  'pandas',
   'requests',
   'typer >= 0.9',
   'unidecode',
