@@ -1,6 +1,6 @@
 import re
 from unidecode import unidecode
-from frictionless import Schema
+from frictionless import Schema, Package
 
 def as_identifier(x, case=str.lower): 
     result = unidecode(x) 
@@ -24,3 +24,20 @@ def remove_field_properties(schema, field_name, properties):
     ]
 
     return Schema.from_descriptor(schema_descriptor)
+
+class read_datapackage:
+    """
+    Read all package resource to memory as pandas data frames
+
+    >>> dp = read_datapackage('datapackage.json')
+    >>> dp.my_resource
+    >>> dp['my_resource']
+    """
+    def __init__(self, source):
+        self._package = Package(source)
+        for resource_name in self._package.resource_names:
+            setattr(self, resource_name, self._package.get_resource(resource_name).to_pandas())
+    def __getitem__(self, item):
+        return getattr(self, item)
+    def __repr__(self):
+        return f"Package {self._package.name} ({len(self._package.resources)} resources)"
