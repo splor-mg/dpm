@@ -1,7 +1,7 @@
 # Data Package Manager (dpm)
 
-[![Tests](https://github.com/splor-mg/dpm/workflows/tests/badge.svg)](https://github.com/splor-mg/dpm/actions/)
-[![Coverage](https://img.shields.io/codecov/c/github/splor-mg/dpm/master)](https://app.codecov.io/gh/splor-mg/dpm)
+[![Tests](https://github.com/splor-mg/dpm/actions/workflows/tests.yaml/badge.svg)](https://github.com/splor-mg/dpm/actions/)
+[![Coverage](https://codecov.io/gh/splor-mg/dpm/branch/main/graph/badge.svg)](https://app.codecov.io/gh/splor-mg/dpm)
 
 ## Docker
 
