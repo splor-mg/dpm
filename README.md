@@ -1,5 +1,8 @@
 # Data Package Manager (dpm)
 
+[![Tests](https://github.com/splor-mg/dpm/workflows/tests/badge.svg)](https://github.com/splor-mg/dpm/actions/)
+[![Coverage](https://img.shields.io/codecov/c/github/splor-mg/dpm/master)](https://app.codecov.io/gh/splor-mg/dpm)
+
 ## Docker
 
 Para fazer build da imagem e executar o container execute:
@@ -23,10 +26,4 @@ Para rodar os testes execute:
 
 ```bash
 python -m pytest
-```
-
-Para rodar os testes e gerar o relatório de cobertura de código em `htmlcov/index.html` execute:
-
-```bash
-make coverage
 ```
