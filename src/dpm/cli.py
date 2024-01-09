@@ -6,9 +6,8 @@ import logging
 from typing import Optional
 from typing_extensions import Annotated
 import importlib.metadata
-from itertools import chain
 from .utils import read_datapackage
-import dpm.concat
+from .concat import concat
 try:
     import tomllib
 except ModuleNotFoundError:
@@ -43,8 +42,8 @@ def main(
     """
 
 
-@app.command()
-def install(
+@app.command("install")
+def cli_install(
     descriptor: Annotated[Path, typer.Argument()] = Path("data.toml"),
     output_dir: Annotated[Path, typer.Option()] = Path("datapackages"),
 ):
@@ -57,8 +56,8 @@ def install(
     extract_source_packages(data_toml, output_dir)
 
 
-@app.command()
-def load(
+@app.command("load")
+def cli_load(
     manifest: Annotated[Path, typer.Argument()] = Path("data.toml"),
     package: Annotated[Path, typer.Option()] = None,
 ):
@@ -88,8 +87,8 @@ def _validate_enrich_option(option):
         raise typer.BadParameter("required format is key=value")
     return option
 
-@app.command()
-def concat(
+@app.command("concat")
+def cli_concat(
     pattern: Annotated[Optional[str], typer.Argument()] = None,
     package: Annotated[list[str], typer.Option()] = None,
     resource_name: Annotated[list[str], typer.Option()] = None,
@@ -118,5 +117,5 @@ def concat(
     output_dir.mkdir(parents=True, exist_ok=True)
     print(f"Concatenating resources: {', '.join(resource_names)}")
     for resource_name in resource_names:
-        df = dpm.concat.concat(*packages, resource_name = resource_name, id_cols = id_cols)
+        df = concat(*packages, resource_name = resource_name, id_cols = id_cols)
         df.to_csv(output_dir / f'{resource_name}.csv', index=False, encoding='utf-8')
