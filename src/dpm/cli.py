@@ -6,8 +6,11 @@ import logging
 from typing import Optional
 from typing_extensions import Annotated
 import importlib.metadata
+import os
 from .utils import read_datapackage
 from .concat import concat
+from .normalize import normalize_package, normalize_resource
+
 try:
     import tomllib
 except ModuleNotFoundError:
@@ -87,6 +90,7 @@ def _validate_enrich_option(option):
         raise typer.BadParameter("required format is key=value")
     return option
 
+
 @app.command("concat")
 def cli_concat(
     pattern: Annotated[Optional[str], typer.Argument()] = None,
@@ -98,24 +102,54 @@ def cli_concat(
             "--enrich",
             "-e",
             help="Create a new column named 'name' with value from the data package property 'key'",
-            callback=_validate_enrich_option
+            callback=_validate_enrich_option,
         ),
     ] = None,
-    output_dir: Annotated[Path, typer.Option()] = Path('data'),
+    output_dir: Annotated[Path, typer.Option()] = Path("data"),
 ):
     packages = []
     if pattern:
-        packages = sorted(Path('.').glob(pattern))
+        packages = sorted(Path(".").glob(pattern))
     packages.extend(package)
     packages = [read_datapackage(package) for package in packages]
     if not resource_name:
-        resource_names = set.intersection(*[set(package._package.resource_names) for package in packages])
+        resource_names = set.intersection(
+            *[set(package._package.resource_names) for package in packages]
+        )
     if not resource_names:
-        print("There are no resources with the same name in all packages to concatenate...")
+        print(
+            "There are no resources with the same name in all packages to concatenate..."
+        )
         typer.Exit(code=0)
-    id_cols = dict(pair.split('=') for pair in enrich)
+    id_cols = dict(pair.split("=") for pair in enrich)
     output_dir.mkdir(parents=True, exist_ok=True)
     print(f"Concatenating resources: {', '.join(resource_names)}")
     for resource_name in resource_names:
-        df = concat(*packages, resource_name = resource_name, id_cols = id_cols)
-        df.to_csv(output_dir / f'{resource_name}.csv', index=False, encoding='utf-8')
+        df = concat(*packages, resource_name=resource_name, id_cols=id_cols)
+        df.to_csv(output_dir / f"{resource_name}.csv", index=False, encoding="utf-8")
+
+
+@app.command("normalize")
+def cli_normalize(
+    source: Annotated[str, typer.Argument()],
+    output_dir: Annotated[Path, typer.Option()] = ".",
+    data_dir: Annotated[Path, typer.Option()] = "data",
+    resource_name: Annotated[str, typer.Option()] = None,
+    metadata: Annotated[bool, typer.Option("--metadata")] = False,
+):
+    output_dir.mkdir(parents=True, exist_ok=True)
+    data_dir.mkdir(parents=True, exist_ok=True)
+    package = Package(source)
+    
+    if resource_name:
+        resource = package.get_resource(resource_name)
+        normalize_resource(resource, data_dir)
+        raise typer.Exit()
+
+    if metadata:
+        normalize_package(package, output_dir, data_dir)    
+        raise typer.Exit()
+
+    for resource in package.resources:
+        normalize_resource(resource, data_dir)
+    normalize_package(package, output_dir, data_dir)
