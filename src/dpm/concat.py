@@ -13,6 +13,6 @@ def concat(*packages, resource_name, id_cols = None):
                 if hasattr(package._package, value):
                     resource[key] = getattr(package._package, value)
                 else:
-                    resource[key] = getattr(package._package, 'custom')[value]
+                    resource[key] = getattr(package._package, 'custom').get(value)
         resources.append(resource)
     return pd.concat(resources, ignore_index = True)
