@@ -12,6 +12,9 @@ except ModuleNotFoundError:
 logger = logging.getLogger(__name__)
 
 def read_manifest(path):
+    """
+    Read data.toml manifest file
+    """
     with open(path, "rb") as f:
         result = tomllib.load(f)
     return result
