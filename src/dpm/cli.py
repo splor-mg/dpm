@@ -112,15 +112,17 @@ def cli_concat(
         packages = sorted(Path(".").glob(pattern))
     packages.extend(package)
     packages = [read_datapackage(package) for package in packages]
-    if not resource_name:
+    if resource_name:
+        resource_names = resource_name
+    else:
         resource_names = set.intersection(
             *[set(package._package.resource_names) for package in packages]
         )
-    if not resource_names:
-        print(
-            "There are no resources with the same name in all packages to concatenate..."
-        )
-        typer.Exit(code=0)
+        if not resource_names:
+            print(
+                "There are no resources with the same name in all packages to concatenate..."
+            )
+            typer.Exit(code=0)
     id_cols = dict(pair.split("=") for pair in enrich)
     output_dir.mkdir(parents=True, exist_ok=True)
     print(f"Concatenating resources: {', '.join(resource_names)}")
