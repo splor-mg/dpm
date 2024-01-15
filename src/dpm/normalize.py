@@ -41,6 +41,8 @@ def normalize_package(package: Package, output_dir: Path, data_dir: Path):
         ]
     }
 
+    descriptor.update(package.custom)
+
     target = Package.from_descriptor(descriptor)
     target.basepath = str(output_dir)
     target.custom['updated_at'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
