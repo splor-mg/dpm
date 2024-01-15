@@ -22,6 +22,11 @@ dev = [
     "coverage",
     "pytest-cov",
 ]
+docs = [
+    "mkdocs",
+    "mkdocstrings[python]",
+    "mkdocs-material",
+]
 
 [build-system]
 requires = ["hatchling"]
