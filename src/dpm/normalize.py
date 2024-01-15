@@ -27,7 +27,7 @@ def normalize_package(package: Package, output_dir: Path, data_dir: Path):
             {
             "profile": "tabular-data-resource",
             "name": resource_name,
-            "path": str(data_dir / f'{resource_name}.csv'),
+            "path": str(data_dir.relative_to(output_dir) / f'{resource_name}.csv'),
             "format": "csv",
             "encoding": "utf-8",
             "schema": {"fields": [
@@ -42,6 +42,7 @@ def normalize_package(package: Package, output_dir: Path, data_dir: Path):
     }
 
     target = Package.from_descriptor(descriptor)
+    target.basepath = str(output_dir)
     target.custom['updated_at'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
     
     for resource in target.resources:
