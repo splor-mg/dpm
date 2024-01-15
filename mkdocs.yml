@@ -1,0 +1,8 @@
+site_name: "Data package manager"
+
+theme:
+  name: "material"
+
+plugins:
+- search
+- mkdocstrings

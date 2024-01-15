@@ -23,6 +23,11 @@ dev = [
     "pytest-cov",
     "syrupy",
 ]
+docs = [
+    "mkdocs",
+    "mkdocstrings[python]",
+    "mkdocs-material",
+]
 
 [build-system]
 requires = ["hatchling"]
