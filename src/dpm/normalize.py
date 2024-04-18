@@ -18,6 +18,7 @@ def normalize_resource(resource: Resource, data_dir: Path):
         table = etl.rename(table, field.name, target)
     etl.tocsv(table, data_dir / f'{resource.name}.csv', encoding='utf-8')
 
+
 def normalize_package(package: Package, output_dir: Path, data_dir: Path):
     
     descriptor = {
@@ -50,4 +51,4 @@ def normalize_package(package: Package, output_dir: Path, data_dir: Path):
     for resource in target.resources:
         resource.infer(stats=True)
 
-    target.to_json(output_dir / 'datapackage.json')
+

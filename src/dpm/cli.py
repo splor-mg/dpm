@@ -1,3 +1,5 @@
+import sys
+
 import typer
 from typing_extensions import Annotated
 from frictionless import Package
@@ -137,21 +139,22 @@ def cli_normalize(
     output_dir: Annotated[Path, typer.Option()] = ".",
     data_dir: Annotated[Path, typer.Option()] = "data",
     resource_name: Annotated[str, typer.Option()] = None,
-    metadata: Annotated[bool, typer.Option("--metadata")] = False,
+    json_ext: Annotated[bool, typer.Option("--json")] = False,
+    yaml_ext: Annotated[bool, typer.Option("--yaml")] = False,
 ):
     output_dir.mkdir(parents=True, exist_ok=True)
     data_dir.mkdir(parents=True, exist_ok=True)
     package = Package(source)
-    
+
     if resource_name:
         resource = package.get_resource(resource_name)
         normalize_resource(resource, data_dir)
+        sys.stdout.write(resource.to_yaml() if yaml_ext else resource.to_json())
+
         raise typer.Exit()
 
-    if metadata:
-        normalize_package(package, output_dir, data_dir)    
-        raise typer.Exit()
 
     for resource in package.resources:
         normalize_resource(resource, data_dir)
     normalize_package(package, output_dir, data_dir)
+    sys.stdout.write(package.to_yaml() if yaml_ext else package.to_json())
