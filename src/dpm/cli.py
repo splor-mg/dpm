@@ -143,6 +143,7 @@ def cli_normalize(
     yaml_ext: Annotated[bool, typer.Option("--yaml")] = False,
 ):
     source = str(Path(source).as_posix())
+    resource_name = str(Path(resource_name).as_posix())
 
     output_dir.mkdir(parents=True, exist_ok=True)
     data_dir.mkdir(parents=True, exist_ok=True)
