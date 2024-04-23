@@ -136,28 +136,23 @@ def cli_concat(
 @app.command("normalize")
 def cli_normalize(
     source: Annotated[str, typer.Argument()],
-    output_dir: Annotated[Path, typer.Option()] = ".",
     data_dir: Annotated[Path, typer.Option()] = "data",
     resource_name: Annotated[str, typer.Option()] = None,
     json_ext: Annotated[bool, typer.Option("--json")] = False,
     yaml_ext: Annotated[bool, typer.Option("--yaml")] = False,
 ):
-    source = str(Path(source).as_posix())
-    resource_name = str(Path(resource_name).as_posix())
 
-    output_dir.mkdir(parents=True, exist_ok=True)
     data_dir.mkdir(parents=True, exist_ok=True)
     package = Package(source)
 
     if resource_name:
         resource = package.get_resource(resource_name)
-        normalize_resource(resource, data_dir)
+        resource = normalize_resource(resource, data_dir)
         sys.stdout.write(resource.to_yaml() if yaml_ext else resource.to_json())
 
         raise typer.Exit()
 
-
     for resource in package.resources:
         normalize_resource(resource, data_dir)
-    normalize_package(package, output_dir, data_dir)
+    package = normalize_package(package, data_dir)
     sys.stdout.write(package.to_yaml() if yaml_ext else package.to_json())
