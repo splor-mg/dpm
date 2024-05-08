@@ -5,7 +5,7 @@
 
 ## Docker
 
-Para fazer build da imagem e executar o container execute:
+Para realizar build da imagem e executar o container execute:
 
 ```bash
 docker build --tag dpm-dev .
