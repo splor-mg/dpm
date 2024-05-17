@@ -1,0 +1,139 @@
+# serializer version: 1
+# name: test_normalize_package_json
+  '''
+  {
+    "name": "test-package",
+    "profile": "tabular-data-package",
+    "resources": [
+      {
+        "name": "temporal-dim",
+        "type": "table",
+        "profile": "tabular-data-resource",
+        "path": "data-raw/temporal-dim.csv",
+        "scheme": "file",
+        "format": "csv",
+        "mediatype": "text/csv",
+        "encoding": "utf-8",
+        "schema": {
+          "fields": [
+            {
+              "name": "uo_cod",
+              "type": "integer",
+              "source": "Unidade Orçamentária - Código"
+            },
+            {
+              "name": "uo_desc",
+              "type": "string",
+              "source": "uo_desc"
+            },
+            {
+              "name": "valid",
+              "type": "boolean",
+              "source": "Vigente?"
+            },
+            {
+              "name": "valid_from",
+              "type": "date",
+              "source": "VALID_FROM"
+            },
+            {
+              "name": "valid_to",
+              "type": "date",
+              "source": "Valid_to"
+            },
+            {
+              "name": "updated_at",
+              "type": "datetime",
+              "source": "Updated at"
+            }
+          ]
+        }
+      }
+    ]
+  }
+  '''
+# ---
+# name: test_normalize_package_yaml
+  '''
+  name: test-package
+  profile: tabular-data-package
+  resources:
+    - name: temporal-dim
+      type: table
+      profile: tabular-data-resource
+      path: data-raw/temporal-dim.csv
+      scheme: file
+      format: csv
+      mediatype: text/csv
+      encoding: utf-8
+      schema:
+        fields:
+          - name: uo_cod
+            type: integer
+            source: Unidade Orçamentária - Código
+          - name: uo_desc
+            type: string
+            source: uo_desc
+          - name: valid
+            type: boolean
+            source: Vigente?
+          - name: valid_from
+            type: date
+            source: VALID_FROM
+          - name: valid_to
+            type: date
+            source: Valid_to
+          - name: updated_at
+            type: datetime
+            source: Updated at
+  
+  '''
+# ---
+# name: test_normalize_resource_json
+  '''
+  {
+    "name": "temporal-dim",
+    "type": "table",
+    "profile": "tabular-data-resource",
+    "path": "data-raw/temporal-dim.csv",
+    "scheme": "file",
+    "format": "csv",
+    "mediatype": "text/csv",
+    "encoding": "utf-8",
+    "schema": {
+      "fields": [
+        {
+          "name": "uo_cod",
+          "type": "integer",
+          "source": "Unidade Orçamentária - Código"
+        },
+        {
+          "name": "uo_desc",
+          "type": "string",
+          "source": "uo_desc"
+        },
+        {
+          "name": "valid",
+          "type": "boolean",
+          "source": "Vigente?"
+        },
+        {
+          "name": "valid_from",
+          "type": "date",
+          "source": "VALID_FROM"
+        },
+        {
+          "name": "valid_to",
+          "type": "date",
+          "source": "Valid_to"
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "source": "Updated at"
+        }
+      ]
+    }
+  }
+  '''
+# ---
