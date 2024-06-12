@@ -21,7 +21,7 @@ except ModuleNotFoundError:
 
 logger = logging.getLogger(__name__)
 
-app = typer.Typer()
+app = typer.Typer(pretty_exceptions_show_locals=False)
 
 
 def version_callback(value: bool):
