@@ -1,14 +1,12 @@
 import sys
-
 import typer
-from typing_extensions import Annotated
-from frictionless import Package
-from pathlib import Path
 import logging
+import importlib.metadata
+
+from frictionless import Package, describe
+from pathlib import Path
 from typing import Optional
 from typing_extensions import Annotated
-import importlib.metadata
-import os
 from .utils import read_datapackage
 from .concat import concat
 from .normalize import normalize_package, normalize_resource
@@ -108,6 +106,7 @@ def cli_concat(
         ),
     ] = None,
     output_dir: Annotated[Path, typer.Option()] = Path("data"),
+    metadata_dir: Annotated[Path, typer.Option()] = Path("."),
 ):
     packages = []
     if pattern:
@@ -131,6 +130,8 @@ def cli_concat(
     for resource_name in resource_names:
         df = concat(*packages, resource_name=resource_name, id_cols=id_cols)
         df.to_csv(output_dir / f"{resource_name}.csv", index=False, encoding="utf-8")
+        print(output_dir / f"{resource_name}.csv")
+    #frictionless.describe(source=output_dir / f"{resource_name}.csv", type=package, stats=True)
 
 
 @app.command("normalize")
@@ -140,6 +141,7 @@ def cli_normalize(
     resource_name: Annotated[str, typer.Option()] = None,
     json_ext: Annotated[bool, typer.Option("--json")] = False,
     yaml_ext: Annotated[bool, typer.Option("--yaml")] = False,
+    metadata_dir: Annotated[Path, typer.Option()] = "."
 ):
 
     data_dir.mkdir(parents=True, exist_ok=True)
@@ -147,12 +149,12 @@ def cli_normalize(
 
     if resource_name:
         resource = package.get_resource(resource_name)
-        resource = normalize_resource(resource, data_dir)
+        resource = normalize_resource(resource, data_dir, metadata_dir)
         sys.stdout.write(resource.to_yaml() if yaml_ext else resource.to_json())
 
         raise typer.Exit()
 
     for resource in package.resources:
-        normalize_resource(resource, data_dir)
-    package = normalize_package(package, data_dir)
+        normalize_resource(resource, data_dir, metadata_dir)
+    package = normalize_package(package, data_dir, metadata_dir)
     sys.stdout.write(package.to_yaml() if yaml_ext else package.to_json())
