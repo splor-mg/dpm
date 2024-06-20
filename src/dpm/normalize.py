@@ -22,7 +22,7 @@ def normalize_resource(resource: Resource, data_dir: Path, metadata_dir: Path):
     descriptor = {
         "profile": "tabular-data-resource",
         "name": resource.name,
-        "path":  str(data_dir.relative_to(metadata_dir) / f'{resource.name}.csv'), #str(Path(data_dir / f'{resource.name}.csv').as_posix()),
+        "path":  str((data_dir.relative_to(metadata_dir) / f'{resource.name}.csv').as_posix()),
         "format": "csv",
         "encoding": "utf-8",
         "schema": {"fields": [
@@ -49,7 +49,7 @@ def normalize_package(package: Package, data_dir: Path, metadata_dir: Path):
             {
                 "profile": "tabular-data-resource",
                 "name": resource_name,
-                "path": str(data_dir.relative_to(metadata_dir) / f'{resource_name}.csv'),
+                "path": str((data_dir.relative_to(metadata_dir) / f'{resource_name}.csv').as_posix()),
                 "format": "csv",
                 "encoding": "utf-8",
                 "schema": {"fields": [
