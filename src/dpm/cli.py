@@ -141,7 +141,7 @@ def cli_normalize(
     resource_name: Annotated[str, typer.Option()] = None,
     json_ext: Annotated[bool, typer.Option("--json")] = False,
     yaml_ext: Annotated[bool, typer.Option("--yaml")] = False,
-    metadata_dir: Annotated[Path, typer.Option()] = "."
+    descriptor_path: Annotated[Path, typer.Option()] = "datapackage.json"
 ):
 
     data_dir.mkdir(parents=True, exist_ok=True)
@@ -149,12 +149,31 @@ def cli_normalize(
 
     if resource_name:
         resource = package.get_resource(resource_name)
-        resource = normalize_resource(resource, data_dir, metadata_dir)
-        sys.stdout.write(resource.to_yaml() if yaml_ext else resource.to_json())
+        resource = normalize_resource(resource, data_dir, descriptor_path)
+
+        with open(descriptor_path, 'w', encoding='utf-8') as f:
+
+            if yaml_ext:
+                f.write(resource.to_yaml())
+
+            else:
+                f.write(resource.to_json())
+
+        #sys.stdout.write(resource.to_yaml() if yaml_ext else resource.to_json())
+
 
         raise typer.Exit()
 
     for resource in package.resources:
-        normalize_resource(resource, data_dir, metadata_dir)
-    package = normalize_package(package, data_dir, metadata_dir)
-    sys.stdout.write(package.to_yaml() if yaml_ext else package.to_json())
+        normalize_resource(resource, data_dir, descriptor_path)
+    package = normalize_package(package, data_dir, descriptor_path)
+
+    with open(descriptor_path, 'w', encoding='utf-8') as f:
+
+        if yaml_ext:
+            f.write(package.to_yaml())
+
+        else:
+            f.write(package.to_json())
+
+
