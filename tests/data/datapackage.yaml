@@ -1,0 +1,10 @@
+name: test-package
+resources:
+  - name: temporal-dim
+    path: data-raw/temporal-dim.txt
+    format: csv
+    encoding: windows-1252
+    dialect: 
+      csv:
+        delimiter: '|'
+    schema: schemas/temporal-dim.yaml

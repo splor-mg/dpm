@@ -21,6 +21,7 @@ dev = [
     "pytest",
     "coverage",
     "pytest-cov",
+    "syrupy",
 ]
 
 [build-system]
