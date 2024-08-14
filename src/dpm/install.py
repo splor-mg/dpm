@@ -4,6 +4,7 @@ import logging
 import os
 from frictionless import Package, system
 from pathlib import Path
+from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +43,9 @@ def extract_source_package(source, output_dir):
     for res in [res for res in package.resource_names if res not in fetch_resources]:
         package.remove_resource(res)
 
-
-
+    # If it is a github url, proceed to get the commit hash
+    if urlparse(source['path']).netloc in {'github.com', 'raw.githubusercontent.com'}:
+        package.custom.update({'github_commit_hash': get_commit_hash(source)})
     package.to_json(package_descriptor_path)
 
     if package.resources == []:
@@ -78,3 +80,33 @@ def extract_source_package(source, output_dir):
             logger.warning(f'Resource "{resource_name}" not found for package "{package.name}". '
                         f'Please check your `data.toml` file.')
 
+
+def get_commit_hash(source):
+
+    # Extract repository details from the URL
+    parsed_url = urlparse(source["path"])
+    path_parts = parsed_url.path.strip('/').split('/')
+    repo_owner = path_parts[0]
+    repo_name = path_parts[1]
+    branch_name = path_parts[2]
+
+
+    # Set up headers for authentication (token for private repos)
+    varenv_name = source.get('token', None)
+    if varenv_name:
+
+        token = os.getenv(varenv_name)
+
+        headers = {
+            "Authorization": f"token {token}"
+        }
+    else:
+        headers = {}
+
+    # GitHub API URL to get the commit hash for the branch
+    api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/branches/{branch_name}"
+
+    response = requests.get(api_url, headers=headers)
+    response.raise_for_status()  # Check for request errors
+
+    return response.json()['commit']['sha']
