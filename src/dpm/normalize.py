@@ -4,7 +4,7 @@ import petl as etl
 from pathlib import Path
 from .utils import as_identifier
 
-def normalize_resource(resource: Resource, data_dir: Path, descriptor_path: Path):
+def normalize_resource(resource: Resource, data_dir: Path, metadata_dir: Path):
     
     transform_pipeline = Pipeline(steps=[
     steps.table_normalize(),
@@ -22,7 +22,7 @@ def normalize_resource(resource: Resource, data_dir: Path, descriptor_path: Path
     descriptor = {
         "profile": "tabular-data-resource",
         "name": resource.name,
-        "path":  str((data_dir.relative_to(descriptor_path.parent) / f'{resource.name}.csv').as_posix()),
+        "path":  str((data_dir.relative_to(metadata_dir) / f'{resource.name}.csv').as_posix()),
         "format": "csv",
         "encoding": "utf-8",
         "schema": {"fields": [
@@ -40,7 +40,7 @@ def normalize_resource(resource: Resource, data_dir: Path, descriptor_path: Path
 
     return resource
 
-def normalize_package(package: Package, data_dir: Path, descriptor_path: Path):
+def normalize_package(package: Package, data_dir: Path, metadata_dir: Path):
     
     descriptor = {
         "profile": "tabular-data-package",
@@ -49,7 +49,7 @@ def normalize_package(package: Package, data_dir: Path, descriptor_path: Path):
             {
                 "profile": "tabular-data-resource",
                 "name": resource_name,
-                "path": str((data_dir.relative_to(descriptor_path.parent) / f'{resource_name}.csv').as_posix()),
+                "path": str((data_dir.relative_to(metadata_dir) / f'{resource_name}.csv').as_posix()),
                 "format": "csv",
                 "encoding": "utf-8",
                 "schema": {"fields": [
@@ -67,7 +67,7 @@ def normalize_package(package: Package, data_dir: Path, descriptor_path: Path):
 
     target = Package.from_descriptor(descriptor)
     target.custom['updated_at'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-    
+
     for resource in target.resources:
         resource.infer(stats=True)
 
