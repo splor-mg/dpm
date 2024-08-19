@@ -1,3 +1,5 @@
+import re
+
 import requests
 import shutil
 import logging
@@ -45,7 +47,7 @@ def extract_source_package(source, output_dir):
 
     # If it is a github url, proceed to get the commit hash
     if urlparse(source['path']).netloc in {'github.com', 'raw.githubusercontent.com'}:
-        package.custom.update({'github_commit_hash': get_commit_hash(source)})
+        package.custom.update({'remote': get_commit_info(source)})
     package.to_json(package_descriptor_path)
 
     if package.resources == []:
@@ -81,17 +83,12 @@ def extract_source_package(source, output_dir):
                         f'Please check your `data.toml` file.')
 
 
-def get_commit_hash(source):
+def get_commit_info(source):
 
     # Extract repository details from the URL
-    parsed_url = urlparse(source["path"])
-    path_parts = parsed_url.path.strip('/').split('/')
-    repo_owner = path_parts[0]
-    repo_name = path_parts[1]
-    branch_name = path_parts[2]
+    parsed_url = parse_rawgithub_url(source["path"])
 
-
-    # Set up headers for authentication (token for private repos)
+    # Set up headers for authentication
     varenv_name = source.get('token', None)
     if varenv_name:
 
@@ -103,10 +100,55 @@ def get_commit_hash(source):
     else:
         headers = {}
 
-    # GitHub API URL to get the commit hash for the branch
-    api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/branches/{branch_name}"
+    # GitHub API URL to get the commit hash
+    if is_commit_sha(parsed_url['ref']):
+        api_url = f"https://api.github.com/repos/{parsed_url['user']}/{parsed_url['repo']}/commits/{parsed_url['ref']}"
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()  # Check for request errors
 
-    response = requests.get(api_url, headers=headers)
-    response.raise_for_status()  # Check for request errors
+        return {
+            "host": parsed_url['host'],
+            "user": parsed_url['user'],
+            "repo": parsed_url['repo'],
+            "ref": parsed_url['ref'],
+            "sha": response.json()['sha']
 
-    return response.json()['commit']['sha']
+        }
+    else:
+        api_url = f"https://api.github.com/repos/{parsed_url['user']}/{parsed_url['repo']}/branches/{parsed_url['ref']}"
+
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()  # Check for request errors
+
+        return {
+            "host": parsed_url['host'],
+            "user": parsed_url['user'],
+            "repo": parsed_url['repo'],
+            "ref": parsed_url['ref'],
+            "sha": response.json()['commit']['sha']
+        }
+
+
+def parse_rawgithub_url(url):
+    """
+    Returns the parts of a github url in a dict
+    """
+    parsed_url = urlparse(url)
+    path_parts = parsed_url.path.strip('/').split('/')
+
+    return dict(
+        host=parsed_url.netloc,
+        user=path_parts[0],
+        repo=path_parts[1],
+        ref=path_parts[2],
+    )
+
+
+def is_commit_sha(ref):
+    """
+    Returns True if ref is a valid commit SHA
+    """
+    if re.match(r"([a-z0-9]{40})", ref):
+        return True
+    else:
+        return False
