@@ -36,7 +36,6 @@ def normalize_resource(resource: Resource, data_dir: Path, metadata_dir: Path):
 
     descriptor.update(resource.custom)
     resource = Resource.from_descriptor(descriptor)
-    resource.infer(stats=True)
 
     return resource
 
@@ -66,9 +65,5 @@ def normalize_package(package: Package, data_dir: Path, metadata_dir: Path):
     descriptor.update(package.custom)
 
     target = Package.from_descriptor(descriptor)
-    target.custom['updated_at'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-
-    for resource in target.resources:
-        resource.infer(stats=True)
 
     return target
