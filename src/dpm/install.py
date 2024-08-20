@@ -101,32 +101,20 @@ def get_commit_info(source):
         headers = {}
 
     # GitHub API URL to get the commit hash
-    if is_commit_sha(parsed_url['ref']):
-        api_url = f"https://api.github.com/repos/{parsed_url['user']}/{parsed_url['repo']}/commits/{parsed_url['ref']}"
-        response = requests.get(api_url, headers=headers)
-        response.raise_for_status()  # Check for request errors
+    github_endpoint = "commits" if is_commit_sha(parsed_url['ref']) else "branches"
 
-        return {
-            "host": parsed_url['host'],
-            "user": parsed_url['user'],
-            "repo": parsed_url['repo'],
-            "ref": parsed_url['ref'],
-            "sha": response.json()['sha']
+    api_url = f"https://api.github.com/repos/{parsed_url['user']}/{parsed_url['repo']}/{github_endpoint}/{parsed_url['ref']}"
+    response = requests.get(api_url, headers=headers)
+    response.raise_for_status()  # Check for request errors
 
-        }
-    else:
-        api_url = f"https://api.github.com/repos/{parsed_url['user']}/{parsed_url['repo']}/branches/{parsed_url['ref']}"
+    return {
+        "host": parsed_url['host'],
+        "user": parsed_url['user'],
+        "repo": parsed_url['repo'],
+        "ref": parsed_url['ref'],
+        "sha": response.json()['sha'] if github_endpoint == 'commits' else response.json()['commit']['sha']
 
-        response = requests.get(api_url, headers=headers)
-        response.raise_for_status()  # Check for request errors
-
-        return {
-            "host": parsed_url['host'],
-            "user": parsed_url['user'],
-            "repo": parsed_url['repo'],
-            "ref": parsed_url['ref'],
-            "sha": response.json()['commit']['sha']
-        }
+    }
 
 
 def parse_rawgithub_url(url):
