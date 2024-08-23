@@ -1,13 +1,16 @@
+import sys
 import typer
-from typing_extensions import Annotated
-from frictionless import Package
-from pathlib import Path
 import logging
+import importlib.metadata
+
+from frictionless import Package, describe
+from pathlib import Path
 from typing import Optional
 from typing_extensions import Annotated
-import importlib.metadata
 from .utils import read_datapackage
 from .concat import concat
+from .normalize import normalize_package, normalize_resource
+
 try:
     import tomllib
 except ModuleNotFoundError:
@@ -87,6 +90,7 @@ def _validate_enrich_option(option):
         raise typer.BadParameter("required format is key=value")
     return option
 
+
 @app.command("concat")
 def cli_concat(
     pattern: Annotated[Optional[str], typer.Argument()] = None,
@@ -98,24 +102,78 @@ def cli_concat(
             "--enrich",
             "-e",
             help="Create a new column named 'name' with value from the data package property 'key'",
-            callback=_validate_enrich_option
+            callback=_validate_enrich_option,
         ),
     ] = None,
-    output_dir: Annotated[Path, typer.Option()] = Path('data'),
+    output_dir: Annotated[Path, typer.Option()] = Path("data"),
+    metadata_dir: Annotated[Path, typer.Option()] = Path("."),
 ):
     packages = []
     if pattern:
-        packages = sorted(Path('.').glob(pattern))
+        packages = sorted(Path(".").glob(pattern))
     packages.extend(package)
     packages = [read_datapackage(package) for package in packages]
-    if not resource_name:
-        resource_names = set.intersection(*[set(package._package.resource_names) for package in packages])
-    if not resource_names:
-        print("There are no resources with the same name in all packages to concatenate...")
-        typer.Exit(code=0)
-    id_cols = dict(pair.split('=') for pair in enrich)
+    if resource_name:
+        resource_names = resource_name
+    else:
+        resource_names = set.intersection(
+            *[set(package._package.resource_names) for package in packages]
+        )
+        if not resource_names:
+            print(
+                "There are no resources with the same name in all packages to concatenate..."
+            )
+            typer.Exit(code=0)
+    id_cols = dict(pair.split("=") for pair in enrich)
     output_dir.mkdir(parents=True, exist_ok=True)
     print(f"Concatenating resources: {', '.join(resource_names)}")
     for resource_name in resource_names:
-        df = concat(*packages, resource_name = resource_name, id_cols = id_cols)
-        df.to_csv(output_dir / f'{resource_name}.csv', index=False, encoding='utf-8')
+        df = concat(*packages, resource_name=resource_name, id_cols=id_cols)
+        df.to_csv(output_dir / f"{resource_name}.csv", index=False, encoding="utf-8")
+        print(output_dir / f"{resource_name}.csv")
+    #frictionless.describe(source=output_dir / f"{resource_name}.csv", type=package, stats=True)
+
+
+@app.command("normalize")
+def cli_normalize(
+    source: Annotated[str, typer.Argument()],
+    data_dir: Annotated[Path, typer.Option()] = "data",
+    resource_name: Annotated[str, typer.Option()] = None,
+    json_ext: Annotated[bool, typer.Option("--json")] = False,
+    yaml_ext: Annotated[bool, typer.Option("--yaml")] = False,
+    metadata_dir: Annotated[Path, typer.Option()] = "."
+):
+
+    data_dir.mkdir(parents=True, exist_ok=True)
+    package = Package(source)
+
+    if resource_name:
+        resource = package.get_resource(resource_name)
+        resource = normalize_resource(resource, data_dir, metadata_dir)
+
+        with open(metadata_dir, 'w', encoding='utf-8') as f:
+
+            if yaml_ext:
+                f.write(resource.to_yaml())
+
+            else:
+                f.write(resource.to_json())
+
+        #sys.stdout.write(resource.to_yaml() if yaml_ext else resource.to_json())
+
+
+        raise typer.Exit()
+
+    for resource in package.resources:
+        normalize_resource(resource, data_dir, metadata_dir)
+    package = normalize_package(package, data_dir, metadata_dir)
+
+    with open(Path(metadata_dir, "datapackage.json"), 'w', encoding='utf-8') as f:
+
+        if yaml_ext:
+            f.write(package.to_yaml())
+
+        else:
+            f.write(package.to_json())
+
+
