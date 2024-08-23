@@ -1,0 +1,11 @@
+title = "checks-loa-ppag"
+
+[packages]
+
+[packages.sisor]
+path = "https://raw.githubusercontent.com/splor-mg/sisor-dados-2024/main/datapackage.json"
+resources = ["base_qdd_plurianual"]
+
+[packages.reest]
+path = "https://raw.githubusercontent.com/splor-mg/dados-reestimativa/d43b96af767a25371e89e69a68705bcdceece6ff/datapackage.json"
+token = "GITHUB_TOKEN"
