@@ -13,7 +13,25 @@ def test_get_commit_info_from_branch():
     }
 
     assert result == expected
-    
+
+def test_get_commit_info_from_branch_private_repo():
+    # em repositórios privados a função get_commit_info usa a variável de ambiente indicada em 'token' para fins de autenticação
+    source = {
+        "path": "https://raw.githubusercontent.com/splor-mg/obz-dados/metadata-save/datapackage.yaml",
+        "token": "GITHUB_TOKEN"
+    }
+    result = get_commit_info(source)
+
+    expected = {
+        "host": "raw.githubusercontent.com",
+        "user": "splor-mg",
+        "repo": "obz-dados",
+        "ref": "metadata-save",
+        "sha": "f0e49cd65e4b234ba639d666d360fa0e33ceae95"
+    }
+
+    assert result == expected
+
 def test_get_commit_info_from_sha():
     source = {"path": "https://raw.githubusercontent.com/splor-mg/sisor-dados-2024/2a9a8280c6deda1b47e1cf708995b374125d4edd/datapackage.json"}
     result = get_commit_info(source)
