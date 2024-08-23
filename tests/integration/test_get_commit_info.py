@@ -1,15 +1,10 @@
 from dpm.install import get_commit_info
-try:
-    import tomllib
-except ModuleNotFoundError:
-    import tomli as tomllib
 
-def test_get_commit_info():
-    source_branch = {"path": "https://raw.githubusercontent.com/splor-mg/dados-sisor-2023/main/datapackage.yaml"}
-    source_sha = {
-        "path": "https://raw.githubusercontent.com/splor-mg/sisor-dados-2024/2a9a8280c6deda1b47e1cf708995b374125d4edd/datapackage.json"}
+def test_get_commit_info_from_branch():
+    source = {"path": "https://raw.githubusercontent.com/splor-mg/dados-sisor-2023/main/datapackage.yaml"}
+    result = get_commit_info(source)
 
-    expected_branch = {
+    expected = {
         "host": "raw.githubusercontent.com",
         "user": "splor-mg",
         "repo": "dados-sisor-2023",
@@ -17,7 +12,13 @@ def test_get_commit_info():
         "sha": "8fe577af619ae7ec7fec821b60fed96d46561858"
     }
 
-    expected_sha = {
+    assert result == expected
+    
+def test_get_commit_info_from_sha():
+    source = {"path": "https://raw.githubusercontent.com/splor-mg/sisor-dados-2024/2a9a8280c6deda1b47e1cf708995b374125d4edd/datapackage.json"}
+    result = get_commit_info(source)
+
+    expected = {
         "host": "raw.githubusercontent.com",
         "user": "splor-mg",
         "repo": "sisor-dados-2024",
@@ -25,5 +26,4 @@ def test_get_commit_info():
         "sha": "2a9a8280c6deda1b47e1cf708995b374125d4edd"
     }
 
-    assert expected_branch == get_commit_info(source_branch)
-    assert expected_sha == get_commit_info(source_sha)
+    assert result == expected
