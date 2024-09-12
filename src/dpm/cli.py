@@ -49,7 +49,7 @@ def main(
 def cli_install(
     descriptor: Annotated[Path, typer.Argument()] = Path("data.toml"),
     output_dir: Annotated[Path, typer.Option()] = Path("datapackages"),
-    packages: Annotated[Optional[list[str]], typer.Option()] = None,
+    package: Annotated[Optional[list[str]], typer.Option()] = None,
 ):
     """
     Download data packages (descriptor and resources data files) listed in package.sources and saves into datapackages/
@@ -58,8 +58,8 @@ def cli_install(
         data_toml = tomllib.load(f)
 
     # filter data_toml based in the packages option list
-    if packages:
-        data_toml = {"packages": {name: pkg for name, pkg in data_toml["packages"].items() if name in packages}}
+    if package:
+        data_toml = {"packages": {name: pkg for name, pkg in data_toml["packages"].items() if name in package}}
 
     extract_source_packages(data_toml, output_dir)
 
