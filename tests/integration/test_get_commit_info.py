@@ -18,7 +18,7 @@ def test_get_commit_info_from_branch_private_repo():
     # em repositórios privados a função get_commit_info usa a variável de ambiente indicada em 'token' para fins de autenticação
     source = {
         "path": "https://raw.githubusercontent.com/splor-mg/obz-dados/metadata-save/datapackage.yaml",
-        "token": "GITHUB_TOKEN"
+        "token": "GH_PAT"
     }
     result = get_commit_info(source)
 
