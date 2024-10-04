@@ -69,8 +69,6 @@ def cli_install(
             return 1
     extract_source_packages(data_toml, output_dir)
 
-    extract_source_packages(data_toml, output_dir)
-
 
 @app.command("load")
 def cli_load(
