@@ -7,7 +7,7 @@ from frictionless import Package, describe
 from pathlib import Path
 from typing import Optional
 from typing_extensions import Annotated
-from .utils import read_datapackage
+from .utils import read_datapackage, read_jsonlines, filter_jsonlines, jsonlog_toexcel, is_complete_path
 from .concat import concat
 from .normalize import normalize_package, normalize_resource
 
@@ -182,3 +182,37 @@ def cli_normalize(
             f.write(package.to_json())
 
 
+
+
+
+@app.command("report")
+def cli_report(
+    logfile_path: Annotated[Path, typer.Argument()] = Path("logs/logfile.json"),
+    test_name: Annotated[str, typer.Option()] = None,
+    output_dir: Annotated[Path, typer.Option()] = Path.cwd() / "report.xlsx",
+    format: Annotated[str, typer.Option()] = ".xlsx",
+):
+    supported_input_types = ['jsonl', ]
+    supported_output_types = ['excel', ]
+
+    print(output_dir)
+    if not is_complete_path(output_dir):
+        print(f"Cannot create the report, invalid output_dir.")
+        exit(1)
+
+    if logfile_path.suffix == ".jsonl":
+        print(f"Reading logfile_path {logfile_path}...")
+        df = read_jsonlines(logfile_path)
+
+        if test_name:
+            df = filter_jsonlines(df, "type", test_name)
+
+        if format == '.xlsx':
+
+            jsonlog_toexcel(df, output_dir)
+            print(f"Report saved in {output_dir.absolute()}.")
+        else:
+            print(f"Cannot export to {format}. The supported formats are: {','.join(supported_output_types)}.")
+
+    else:
+        print(f"Cannot create a report with {logfile_path.suffix} files. The supported input formats are: {','.join(supported_input_types)}.")
