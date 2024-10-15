@@ -60,7 +60,13 @@ def cli_install(
     # filter data_toml based in the packages option list
     if package:
         data_toml = {"packages": {name: pkg for name, pkg in data_toml["packages"].items() if name in package}}
+        available_packages = set(data_toml["packages"].keys())
+        selected_packages = set(package)
+        missing_packages = list(selected_packages - available_packages)
 
+        if missing_packages:
+            print(f"'{', '.join(missing_packages)}' did not match any packages in your data.toml. Interrupting.")
+            return 1
     extract_source_packages(data_toml, output_dir)
 
 
