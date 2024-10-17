@@ -52,12 +52,12 @@ def is_complete_path(path: Path) -> bool:
     """
 
     if path.name == '':
-        print(f"Path is missing filename: {path}")
+        print(f"ERROR: Path is missing filename: {path}")
         return False
 
     # Check if it has an extension
     if path.suffix == '':
-        print(f"Path is missing file extension: {path}")
+        print(f"ERROR: Path is missing file extension: {path}")
         return False
 
     return True
