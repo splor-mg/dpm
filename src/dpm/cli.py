@@ -193,12 +193,12 @@ def cli_report(
     format: Annotated[str, typer.Option()] = ".xlsx",
 ):
     supported_input_types = ['jsonl', ]
-    supported_output_types = ['excel', ]
+    supported_output_types = ['.xlsx', ]
 
-    print(output_dir)
     if not is_complete_path(output_dir):
         print(f"Cannot create the report, invalid output_dir.")
-        exit(1)
+        typer.Exit(code=0)
+        exit(0)
 
     if logfile_path.suffix == ".jsonl":
         print(f"Reading logfile_path {logfile_path}...")
