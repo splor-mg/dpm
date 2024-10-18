@@ -7,7 +7,7 @@ from typing import Optional
 from typing_extensions import Annotated
 import importlib.metadata
 from .utils import read_datapackage
-from .concat import concat
+from .concat import concat, chunk_concat_and_write
 try:
     import tomllib
 except ModuleNotFoundError:
@@ -83,6 +83,8 @@ def cli_load(
 
 
 def _validate_enrich_option(option):
+    if option is None:  # Add this check to handle missing enrich option
+        return option
     if any(["=" not in value for value in option]):
         raise typer.BadParameter("required format is key=value")
     return option
@@ -102,20 +104,37 @@ def cli_concat(
         ),
     ] = None,
     output_dir: Annotated[Path, typer.Option()] = Path('data'),
+    chunk_size: Annotated[Optional[int], typer.Option()] = None,
 ):
     packages = []
     if pattern:
         packages = sorted(Path('.').glob(pattern))
     packages.extend(package)
-    packages = [read_datapackage(package) for package in packages]
-    if not resource_name:
-        resource_names = set.intersection(*[set(package._package.resource_names) for package in packages])
-    if not resource_names:
-        print("There are no resources with the same name in all packages to concatenate...")
-        typer.Exit(code=0)
-    id_cols = dict(pair.split('=') for pair in enrich)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    print(f"Concatenating resources: {', '.join(resource_names)}")
-    for resource_name in resource_names:
-        df = concat(*packages, resource_name = resource_name, id_cols = id_cols)
-        df.to_csv(output_dir / f'{resource_name}.csv', index=False, encoding='utf-8')
+
+    # read in chunks of data, for low memory computers
+    if chunk_size:
+        packages = [Package(descriptor) for descriptor in packages]
+
+        #still no intesection
+        resource_names = [resource.name for package in packages for resource in package.resources]
+
+        id_cols = dict(pair.split('=') for pair in enrich)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Concatenating resources: {', '.join(resource_names)}")
+
+        for resource_name in resource_names:
+            chunk_concat_and_write(*packages, resource_name=resource_name, id_cols=id_cols,
+                               output_file=output_dir / f'{resource_name}.csv', chunksize=chunk_size)
+    else:
+        packages = [read_datapackage(package) for package in packages]
+        if not resource_name:
+            resource_names = set.intersection(*[set(package._package.resource_names) for package in packages])
+        if not resource_names:
+            print("There are no resources with the same name in all packages to concatenate...")
+            typer.Exit(code=0)
+        id_cols = dict(pair.split('=') for pair in enrich)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Concatenating resources: {', '.join(resource_names)}")
+        for resource_name in resource_names:
+                df = concat(*packages, resource_name = resource_name, id_cols = id_cols)
+                df.to_csv(output_dir / f'{resource_name}.csv', index=False, encoding='utf-8')
