@@ -62,33 +62,57 @@ def is_complete_path(path: Path) -> bool:
 
     return True
 
-def read_jsonlines(jsonl_file):
+def read_jsonlines(logfile_path):
     """
     Read JSON Lines file and return DataFrame
     """
-    return pd.read_json(jsonl_file, lines=True)
+    if logfile_path.exists():
+        return pd.read_json(logfile_path, lines=True)
+    else:
+        print(f"ERROR: Log file does not exist: {logfile_path}. Please check the path and try again.")
+        exit(0)
 
 
 def filter_jsonlines(df, filter_key, filter_value):
     """
     Filter the DataFrame based on a specific key and value
     """
-    return df[df[filter_key] == filter_value]
-
+    if filter_value in df.type.values:
+        return df[df[filter_key] == filter_value]
+    else:
+        print(f"ERROR: The test {filter_value} is not present in the log file. Please check the test name and try again")
+        exit(1)
 
 def jsonlog_toexcel(df, output_dir: Path):
     """
-    Convert Jsonlines DataFrame to an Excel file
+    Convert Jsonlines DataFrame to an Excel file with multiple sheets for each 'type' of test,
+    only including the relevant columns from the 'row' dictionary for each type.
     """
+    test_number = 1
 
-    # Expand the 'row' column dictionary into separate columns
-    row_df = pd.json_normalize(df['row'])
+    # Group by 'type' and create a new sheet for each group
+    with pd.ExcelWriter(output_dir, engine='openpyxl') as writer:
+        for test_type, group_df in df.groupby('type'):
 
-    # Combine 'message' and expanded 'row' columns
-    # Ensure that the indices are properly aligned
-    final_df = pd.concat([df[['message']].reset_index(drop=True), row_df.reset_index(drop=True)], axis=1)
+            # Expand the 'row' column dictionary into separate columns for the current group
+            row_df = pd.json_normalize(group_df['row'])
 
+            # Filter the columns of 'row' that are not null, avoiding writing columns that not belong to a given test
+            relevant_columns = row_df.columns[row_df.notnull().any()].tolist()
 
-    # Export the final DataFrame to Excel
-    output_dir.parent.mkdir(parents=True, exist_ok=True)
-    final_df.to_excel(output_dir, index=False)
+            # Combine 'test_type', 'message', and the relevant expanded 'row' columns
+            final_df = pd.DataFrame({
+                'type': test_type,
+                'message': group_df['message'].values
+            })
+
+            # Add relevant columns from the expanded row_df
+            for col in relevant_columns:
+                final_df[col] = row_df[col].values
+
+            # Replace '=' with "'=" in string columns to avoid excel formula dectetion errors
+            final_df = final_df.map(lambda x: str(x).replace('=', "'=") if isinstance(x, str) else x)
+
+            final_df.to_excel(writer, sheet_name=f"teste_{test_number}", index=False)
+
+            test_number += 1
