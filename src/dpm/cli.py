@@ -136,7 +136,7 @@ def cli_concat(
         df = concat(*packages, resource_name=resource_name, id_cols=id_cols)
         df.to_csv(output_dir / f"{resource_name}.csv", index=False, encoding="utf-8")
         print(output_dir / f"{resource_name}.csv")
-    #frictionless.describe(source=output_dir / f"{resource_name}.csv", type=package, stats=True)
+    # frictionless.describe(source=output_dir / f"{resource_name}.csv", type=package, stats=True)
 
 
 @app.command("normalize")
@@ -164,9 +164,6 @@ def cli_normalize(
             else:
                 f.write(resource.to_json())
 
-        #sys.stdout.write(resource.to_yaml() if yaml_ext else resource.to_json())
-
-
         raise typer.Exit()
 
     for resource in package.resources:
@@ -182,35 +179,35 @@ def cli_normalize(
             f.write(package.to_json())
 
 
-
-
-
 @app.command("report")
 def cli_report(
     logfile_path: Annotated[Path, typer.Argument()] = Path("logs/logfile.jsonl"),
-    test_name: Annotated[str, typer.Option()] = None,
-    output_dir: Annotated[Path, typer.Option()] = Path.cwd() / "report.xlsx",
+    filter_type: Annotated[str, typer.Option(help="Filters json objects in the log file where the `Type` key has the value `--filter-type`.")] = None,
+    output_dir: Annotated[Path, typer.Option(help="Folder where the report file will be saved.")] = Path.cwd(),
     format: Annotated[str, typer.Option()] = ".xlsx",
 ):
+    """
+    Export a json lines logfile to an specific file format.
+    """
     supported_input_types = ['jsonl', 'json']
     supported_output_types = ['.xlsx', ]
 
-    if not is_complete_path(output_dir):
+    if is_complete_path(output_dir):
         print(f"ERROR: Cannot create the report, invalid output_dir.")
         typer.Exit(code=0)
-        exit(0)
+        exit(code=0)
 
     if logfile_path.suffix in [".jsonl", ".json"]:
         print(f"Reading logfile_path: {logfile_path}...")
 
         df = read_jsonlines(logfile_path)
 
-        if test_name:
-            df = filter_jsonlines(df, "type", test_name)
+        if filter_type:
+            df = filter_jsonlines(df, "type", filter_type)
 
         if format == '.xlsx':
-            jsonlog_toexcel(df, output_dir)
-            print(f"Report saved in {output_dir.absolute()}.")
+            jsonlog_toexcel(df, output_dir, format)
+            print(f"Report saved in {output_dir.absolute()/ f'report{format}'}.")
         else:
             print(f"ERROR: Cannot export to {format}. The supported formats are: {','.join(supported_output_types)}.")
 

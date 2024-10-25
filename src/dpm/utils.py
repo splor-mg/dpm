@@ -14,6 +14,7 @@ def as_identifier(x, case=str.lower):
     result = case(result)
     return result.strip('_')
 
+
 def remove_field_properties(schema, field_name, properties):
     schema_descriptor = schema.to_descriptor()
     field_descriptor = schema.get_field(field_name).to_descriptor()
@@ -27,6 +28,7 @@ def remove_field_properties(schema, field_name, properties):
     ]
 
     return Schema.from_descriptor(schema_descriptor)
+
 
 class read_datapackage:
     """
@@ -51,16 +53,12 @@ def is_complete_path(path: Path) -> bool:
     Check if the path contains a directory and a file name and extension
     """
 
-    if path.name == '':
-        print(f"ERROR: Path is missing filename: {path}")
-        return False
+    if path.suffix:
+        print(f"ERROR: --output- cannot have a file extension: {path}")
+        return True
 
-    # Check if it has an extension
-    if path.suffix == '':
-        print(f"ERROR: Path is missing file extension: {path}")
-        return False
+    return False
 
-    return True
 
 def read_jsonlines(logfile_path):
     """
@@ -80,18 +78,21 @@ def filter_jsonlines(df, filter_key, filter_value):
     if filter_value in df.type.values:
         return df[df[filter_key] == filter_value]
     else:
-        print(f"ERROR: The test {filter_value} is not present in the log file. Please check the test name and try again")
+        print(f"ERROR: The type {filter_value} is not present in the log file. Please check its value and try again")
         exit(1)
 
-def jsonlog_toexcel(df, output_dir: Path):
+
+def jsonlog_toexcel(df, output_dir: Path, format: str):
     """
     Convert Jsonlines DataFrame to an Excel file with multiple sheets for each 'type' of test,
     only including the relevant columns from the 'row' dictionary for each type.
     """
-    test_number = 1
+    sheet_number = 1
+
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     # Group by 'type' and create a new sheet for each group
-    with pd.ExcelWriter(output_dir, engine='openpyxl') as writer:
+    with pd.ExcelWriter(output_dir / f"report{format}", engine='openpyxl') as writer:
         for test_type, group_df in df.groupby('type'):
 
             # Expand the 'row' column dictionary into separate columns for the current group
@@ -113,6 +114,6 @@ def jsonlog_toexcel(df, output_dir: Path):
             # Replace '=' with "'=" in string columns to avoid excel formula dectetion errors
             final_df = final_df.map(lambda x: str(x).replace('=', "'=") if isinstance(x, str) else x)
 
-            final_df.to_excel(writer, sheet_name=f"teste_{test_number}", index=False)
+            final_df.to_excel(writer, sheet_name=f"teste_{sheet_number}", index=False)
 
-            test_number += 1
+            sheet_number += 1
