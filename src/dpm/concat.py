@@ -1,3 +1,4 @@
+from pathlib import Path
 import pandas as pd
 
 
@@ -28,8 +29,7 @@ def chunk_concat_and_write(*packages, resource_name, id_cols=None, output_file='
     header_written = False
 
     for package in packages:
-        resource_path = package.get_resource(resource_name).path
-
+        resource_path = Path(package.basepath, package.get_resource(resource_name).path)
         # Read each resource in chunks
         for chunk in pd.read_csv(resource_path, chunksize=chunksize):
             if id_cols and isinstance(id_cols, dict):

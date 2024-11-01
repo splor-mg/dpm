@@ -102,7 +102,7 @@ def cli_concat(
             help="Create a new column named 'name' with value from the data package property 'key'",
             callback=_validate_enrich_option
         ),
-    ] = None,
+    ] = [],
     output_dir: Annotated[Path, typer.Option()] = Path('data'),
     chunk_size: Annotated[Optional[int], typer.Option()] = None,
 ):
@@ -115,16 +115,21 @@ def cli_concat(
     if chunk_size:
         packages = [Package(descriptor) for descriptor in packages]
 
-        #still no intesection
-        resource_names = [resource.name for package in packages for resource in package.resources]
+        resource_names = list(set.intersection(*[set(resource.name for resource in package.resources) for package in packages]))
 
-        id_cols = dict(pair.split('=') for pair in enrich)
+        if not resource_names:
+            print("There are no resources with the same name in all packages to concatenate...")
+            typer.Exit(code=0)
+
+        id_cols = dict(pair.split('=') for pair in enrich) if enrich else {}
         output_dir.mkdir(parents=True, exist_ok=True)
+
         print(f"Concatenating resources: {', '.join(resource_names)}")
 
         for resource_name in resource_names:
             chunk_concat_and_write(*packages, resource_name=resource_name, id_cols=id_cols,
                                output_file=output_dir / f'{resource_name}.csv', chunksize=chunk_size)
+            print(f"Concatenated resource saved in {output_dir / resource_name}'.csv'")
     else:
         packages = [read_datapackage(package) for package in packages]
         if not resource_name:
@@ -138,3 +143,4 @@ def cli_concat(
         for resource_name in resource_names:
                 df = concat(*packages, resource_name = resource_name, id_cols = id_cols)
                 df.to_csv(output_dir / f'{resource_name}.csv', index=False, encoding='utf-8')
+                print(f"Concatenated resource saved in {output_dir / resource_name}'.csv'")
