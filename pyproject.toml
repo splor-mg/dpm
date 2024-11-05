@@ -21,11 +21,13 @@ dev = [
     "pytest",
     "coverage",
     "pytest-cov",
+    "toml"
 ]
 docs = [
     "mkdocs",
     "mkdocstrings[python]",
     "mkdocs-material",
+    "mkdocs-macros-plugin"
 ]
 
 [build-system]

@@ -1,5 +1,11 @@
-# Data package manager
+# Data Package Manager
 
-## Reference
+**Description**: {{ project_description }}
 
-::: dpm.load.read_manifest
+**Version**: {{ project_version }}
+
+**Dependencies**:
+
+{% for dependency in dependencies %}
+- {{ dependency | format_dependency }}
+{% endfor %}

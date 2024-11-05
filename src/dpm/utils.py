@@ -6,7 +6,7 @@ def as_identifier(x, case=str.lower):
     result = unidecode(x) 
     result = re.sub(r'\([^)]*\)', '', result)  # Remove all characters within parentheses
     result = result.replace('\u00a0', ' ')  # Replace non-breaking space with regular space
-    result = re.sub('\W|^(?=\d)','_', result)
+    result = re.sub(r'\W|^(?=\d)','_', result)
     result = re.sub('_+', '_', result)
     result = case(result)
     return result.strip('_')
