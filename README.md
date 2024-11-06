@@ -20,7 +20,7 @@ jupyter notebook --ip 0.0.0.0 --allow-root
 
 Para executar o código usando Docker no Pycharm, utilizar [este guia](https://github.com/splor-mg/dpm/issues/5).
 
-## Testes
+## Teste
 
 Para rodar os testes execute:
 
