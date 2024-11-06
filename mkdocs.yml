@@ -1,8 +1,31 @@
-site_name: "Data package manager"
+site_name: "Data package manager (DPM)"
 
 theme:
   name: "material"
 
+nav:
+  - Home: index.md
+  - Getting Started: getting_started.md
+  - Reference: reference.md
+
+
+extra:
+  icon: material
+  theme:
+    features:
+      - navigation.tabs  # For tabbed navigation
+      - navigation.top  # Top navigation bar
+  custom_filters: custom_filters.py
+
+
 plugins:
-- search
-- mkdocstrings
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
+
+
+
+  - macros

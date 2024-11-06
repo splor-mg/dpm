@@ -23,10 +23,13 @@ dev = [
     "pytest-cov",
     "syrupy",
 ]
+
 docs = [
     "mkdocs",
     "mkdocstrings[python]",
     "mkdocs-material",
+    "mkdocs-macros-plugin",
+    "toml",
 ]
 
 [build-system]
