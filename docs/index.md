@@ -1,4 +1,4 @@
-# Data Package Manager
+# Data Package Manager (dpm)
 
 **Description**: {{ project_description }}
 
