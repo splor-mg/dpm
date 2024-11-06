@@ -24,6 +24,14 @@ dev = [
     "syrupy",
 ]
 
+docs = [
+    "mkdocs",
+    "mkdocstrings[python]",
+    "mkdocs-material",
+    "mkdocs-macros-plugin",
+    "toml",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
