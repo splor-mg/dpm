@@ -8,6 +8,8 @@ nav:
   - Getting Started: getting_started.md
   - Reference: reference.md
 
+markdown_extensions:
+  - pymdownx.snippets
 
 extra:
   icon: material
@@ -25,7 +27,5 @@ plugins:
         python:
           options:
             show_source: false
-
-
-
   - macros
+

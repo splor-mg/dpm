@@ -30,6 +30,7 @@ docs = [
     "mkdocs-material",
     "mkdocs-macros-plugin",
     "toml",
+    "pymdown-extensions",
 ]
 
 [build-system]
