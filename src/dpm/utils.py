@@ -1,6 +1,9 @@
 import re
+from pathlib import Path
+
 from unidecode import unidecode
 from frictionless import Schema, Package
+import pandas as pd
 
 def as_identifier(x, case=str.lower): 
     result = unidecode(x) 
@@ -10,6 +13,7 @@ def as_identifier(x, case=str.lower):
     result = re.sub('_+', '_', result)
     result = case(result)
     return result.strip('_')
+
 
 def remove_field_properties(schema, field_name, properties):
     schema_descriptor = schema.to_descriptor()
@@ -24,6 +28,7 @@ def remove_field_properties(schema, field_name, properties):
     ]
 
     return Schema.from_descriptor(schema_descriptor)
+
 
 class read_datapackage:
     """
@@ -41,3 +46,74 @@ class read_datapackage:
         return getattr(self, item)
     def __repr__(self):
         return f"Package {self._package.name} ({len(self._package.resources)} resources)"
+
+
+def is_complete_path(path: Path) -> bool:
+    """
+    Check if the path contains a directory and a file name and extension
+    """
+
+    if path.suffix:
+        print(f"ERROR: --output- cannot have a file extension: {path}")
+        return True
+
+    return False
+
+
+def read_jsonlines(logfile_path):
+    """
+    Read JSON Lines file and return DataFrame
+    """
+    if logfile_path.exists():
+        return pd.read_json(logfile_path, lines=True)
+    else:
+        print(f"ERROR: Log file does not exist: {logfile_path}. Please check the path and try again.")
+        exit(0)
+
+
+def filter_jsonlines(df, filter_key, filter_value):
+    """
+    Filter the DataFrame based on a specific key and value
+    """
+    if filter_value in df.type.values:
+        return df[df[filter_key] == filter_value]
+    else:
+        print(f"ERROR: The type {filter_value} is not present in the log file. Please check its value and try again")
+        exit(1)
+
+
+def jsonlog_toexcel(df, output_dir: Path, format: str):
+    """
+    Convert Jsonlines DataFrame to an Excel file with multiple sheets for each 'type' of test,
+    only including the relevant columns from the 'row' dictionary for each type.
+    """
+    sheet_number = 1
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Group by 'type' and create a new sheet for each group
+    with pd.ExcelWriter(output_dir / f"report{format}", engine='openpyxl') as writer:
+        for test_type, group_df in df.groupby('type'):
+
+            # Expand the 'row' column dictionary into separate columns for the current group
+            row_df = pd.json_normalize(group_df['row'])
+
+            # Filter the columns of 'row' that are not null, avoiding writing columns that not belong to a given test
+            relevant_columns = row_df.columns[row_df.notnull().any()].tolist()
+
+            # Combine 'test_type', 'message', and the relevant expanded 'row' columns
+            final_df = pd.DataFrame({
+                'type': test_type,
+                'message': group_df['message'].values
+            })
+
+            # Add relevant columns from the expanded row_df
+            for col in relevant_columns:
+                final_df[col] = row_df[col].values
+
+            # Replace '=' with "'=" in string columns to avoid excel formula dectetion errors
+            final_df = final_df.map(lambda x: str(x).replace('=', "'=") if isinstance(x, str) else x)
+
+            final_df.to_excel(writer, sheet_name=f"teste_{sheet_number}", index=False)
+
+            sheet_number += 1
