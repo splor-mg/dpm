@@ -7,7 +7,8 @@ from typing import Optional
 from typing_extensions import Annotated
 import importlib.metadata
 from .utils import read_datapackage
-from .concat import concat, chunk_concat_and_write
+from .concat import concat, chunk_concat_and_write, build_package
+
 try:
     import tomllib
 except ModuleNotFoundError:
@@ -106,10 +107,12 @@ def cli_concat(
     output_dir: Annotated[Path, typer.Option()] = Path('data'),
     chunk_size: Annotated[Optional[int], typer.Option()] = None,
 ):
+
     packages = []
     if pattern:
         packages = sorted(Path('.').glob(pattern))
-    packages.extend(package)
+    if package is not None:
+        packages.extend(package)
 
     # read in chunks of data, for low memory computers
     if chunk_size:
@@ -126,10 +129,17 @@ def cli_concat(
 
         print(f"Concatenating resources: {', '.join(resource_names)}")
 
+        resources_paths = []
+
         for resource_name in resource_names:
             chunk_concat_and_write(*packages, resource_name=resource_name, id_cols=id_cols,
                                output_file=output_dir / f'{resource_name}.csv', chunksize=chunk_size)
             print(f"Concatenated resource saved in {output_dir / resource_name}'.csv'")
+            resources_paths.append(output_dir / f'{resource_name}.csv')
+
+        build_package(resources_paths, Path(output_dir).parent.name, output_dir)
+        print(f"concatenated resources `datapackage.json` saved in {Path(output_dir.parent)}")
+
     else:
         packages = [read_datapackage(package) for package in packages]
         if not resource_name:
@@ -140,7 +150,14 @@ def cli_concat(
         id_cols = dict(pair.split('=') for pair in enrich)
         output_dir.mkdir(parents=True, exist_ok=True)
         print(f"Concatenating resources: {', '.join(resource_names)}")
+
+        resources_paths = []
+
         for resource_name in resource_names:
-                df = concat(*packages, resource_name = resource_name, id_cols = id_cols)
-                df.to_csv(output_dir / f'{resource_name}.csv', index=False, encoding='utf-8')
-                print(f"Concatenated resource saved in {output_dir / resource_name}'.csv'")
+            df = concat(*packages, resource_name = resource_name, id_cols = id_cols)
+            df.to_csv(output_dir / f'{resource_name}.csv', index=False, encoding='utf-8')
+            print(f"Concatenated resource saved in {output_dir / resource_name}'.csv'")
+            resources_paths.append(output_dir / f'{resource_name}.csv')
+
+        build_package(resources_paths, Path(output_dir).parent.name, output_dir)
+        print(f"concatenated resources `datapackage.json` saved in {Path(output_dir.parent)}")
