@@ -1,3 +1,3 @@
 --8<--
-README.md:name
+README.md
 --8<--

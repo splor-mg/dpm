@@ -3,8 +3,6 @@
 [![Tests](https://github.com/splor-mg/dpm/actions/workflows/tests.yaml/badge.svg)](https://github.com/splor-mg/dpm/actions/)
 [![Coverage](https://codecov.io/gh/splor-mg/dpm/branch/main/graph/badge.svg)](https://app.codecov.io/gh/splor-mg/dpm)
 
---8<-- [start:name]
-
 DPM is a streamlined tool for managing and deploying data resources as described in Frictionless Data Packages. Designed to simplify data workflows, DPM allows you to download, organize, and work with structured datasets and resources by referencing a single, standardized descriptor file (datapackage.json). This makes it easy to handle multiple data files, track their metadata, and ensure consistency across data projects.
 
 With DPM, you can:
@@ -62,5 +60,3 @@ For each resource, a subfolder named `your_datapackage_name` will be created, an
     ├── data.toml
     └── main.py
 ```
-
---8<-- [end:name]
