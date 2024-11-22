@@ -33,8 +33,9 @@ def version_callback(value: bool):
         raise typer.Exit()
 
 
-@app.callback()
+@app.callback(invoke_without_command=True)
 def main(
+    ctx: typer.Context,
     version: Annotated[
         Optional[bool],
         typer.Option("--version", callback=version_callback, is_eager=True),
@@ -43,7 +44,10 @@ def main(
     """
     Data package manager to install, update and remove data dependencies.
     """
-
+    
+    if ctx.invoked_subcommand is None:
+        typer.echo(ctx.get_help())
+        raise typer.Exit()
 
 @app.command("install")
 def cli_install(
