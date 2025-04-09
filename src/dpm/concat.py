@@ -36,10 +36,10 @@ def chunk_concat_and_write(*packages, resource_name, id_cols=None, output_file='
         for chunk in pd.read_csv(resource_path, chunksize=chunksize):
             if id_cols and isinstance(id_cols, dict):
                 for key, value in id_cols.items():
-                    if hasattr(package._package, value):
-                        chunk[key] = getattr(package._package, value)
+                    if hasattr(package, value):
+                        chunk[key] = getattr(package, value)
                     else:
-                        chunk[key] = getattr(package._package, 'custom')[value]
+                        chunk[key] = getattr(package, 'custom')[value]
 
             # Write each chunk to the output file, appending after the first chunk
             chunk.to_csv(output_file, mode='a', header=not header_written, index=False, encoding='utf-8')
@@ -62,6 +62,7 @@ def build_package(data_files: list, package_name: Path, output_dir: Path):
         resource.infer(stats=True)
         resource.profile = "tabular-data-resource"
         package.add_resource(resource)
+        resource.path = str((output_dir.relative_to(output_dir.parent) / f'{resource.name}.csv').as_posix())
 
     package.profile = "tabular-data-package"
     package.custom['updated_at'] = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')

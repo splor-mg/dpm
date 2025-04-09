@@ -100,7 +100,7 @@ def cli_concat(
         typer.Option(
             "--enrich",
             "-e",
-            help="use `name:key` pattern to create a new column named 'name' with value from the data package property named 'key'",
+            help="Use `name:key` pattern to create a new column named 'name' with value from the data package property named 'key'",
             callback=_validate_enrich_option
         ),
     ] = [],
