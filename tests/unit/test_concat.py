@@ -28,8 +28,6 @@ def sample_packages_read():
 
 def test_concat(sample_packages_read):
     sigplan2024, sigplan2025 = sample_packages_read
-    #sigplan2024 = read_datapackage("tests\data\datapackages\siafi_2024\datapackage.json")
-    #sigplan2025 = read_datapackage("tests\data\datapackages\siafi_2025\datapackage.json")
     result = concat(sigplan2024, sigplan2025, resource_name="execucao")
 
     # Verify the resulting DataFrame
