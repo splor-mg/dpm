@@ -4,14 +4,28 @@ import pandas as pd
 from frictionless import Package, Resource
 
 
+
 def concat(*packages, resource_name, id_cols = None):
     """
     >>> indicadores = concat(sigplan2024, sigplan2023, resource_name = 'indicadores_planejamento', id_cols={'ano': 'period'})
     """
 
     resources = []
+    all_columns = set()
+    
+    # First pass to collect all unique columns
     for package in packages:
         resource = package[resource_name]
+        all_columns.update(resource.columns)
+
+    # Second pass to ensure all DataFrames have all columns
+    for package in packages:
+        resource = package[resource_name]
+        # Add missing columns with NaN values
+        for col in all_columns:
+            if col not in resource.columns:
+                resource[col] = pd.NA
+                
         if id_cols and isinstance(id_cols, dict):
             for key, value in id_cols.items():
                 if hasattr(package._package, value):
@@ -19,7 +33,8 @@ def concat(*packages, resource_name, id_cols = None):
                 else:
                     resource[key] = getattr(package._package, 'custom')[value]
         resources.append(resource)
-    return pd.concat(resources, ignore_index = True)
+    
+    return pd.concat(resources, ignore_index=True)
 
 
 def chunk_concat_and_write(*packages, resource_name, id_cols=None, output_file='output.csv', chunksize=10000):
@@ -27,6 +42,14 @@ def chunk_concat_and_write(*packages, resource_name, id_cols=None, output_file='
     Concatenate large datapackages without loading all data into memory.
     Writes data in chunks directly to disk.
     """
+    # First pass to collect all unique columns
+    all_columns = set()
+    for package in packages:
+        resource_path = Path(package.basepath, package.get_resource(resource_name).path)
+        # Read just the header to get column names
+        df_header = pd.read_csv(resource_path, nrows=0)
+        all_columns.update(df_header.columns)
+
     # writes the header only once
     header_written = False
 
@@ -34,6 +57,11 @@ def chunk_concat_and_write(*packages, resource_name, id_cols=None, output_file='
         resource_path = Path(package.basepath, package.get_resource(resource_name).path)
         # Read each resource in chunks
         for chunk in pd.read_csv(resource_path, chunksize=chunksize):
+            # Add missing columns with NaN values
+            for col in all_columns:
+                if col not in chunk.columns:
+                    chunk[col] = pd.NA
+
             if id_cols and isinstance(id_cols, dict):
                 for key, value in id_cols.items():
                     if hasattr(package, value):
