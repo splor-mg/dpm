@@ -9,8 +9,8 @@ from dpm.concat import concat, chunk_concat_and_write
 @pytest.fixture
 def sample_packages_fric():
     # Sample Frictionless Packages
-    sigplan2024 = Package("tests\data\datapackages\siafi_2024\datapackage.json")
-    sigplan2025 = Package("tests\data\datapackages\siafi_2025\datapackage.json")
+    sigplan2024 = Package("tests/data/datapackages/siafi_2024/datapackage.json")
+    sigplan2025 = Package("tests/data/datapackages/siafi_2025/datapackage.json")
   
     return sigplan2024, sigplan2025
 
@@ -20,8 +20,8 @@ def sample_packages_read():
     
     # load Sample Frictionless Packages
     
-    sigplan2024 = read_datapackage("tests\data\datapackages\siafi_2024\datapackage.json")
-    sigplan2025 = read_datapackage("tests\data\datapackages\siafi_2025\datapackage.json")
+    sigplan2024 = read_datapackage("tests/data/datapackages/siafi_2024/datapackage.json")
+    sigplan2025 = read_datapackage("tests/data/datapackages/siafi_2025/datapackage.json")
     
     return sigplan2024, sigplan2025
 
