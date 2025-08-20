@@ -17,7 +17,7 @@ def test_get_commit_info_from_branch():
 def test_get_commit_info_from_branch_private_repo():
     # em repositórios privados a função get_commit_info usa a variável de ambiente indicada em 'token' para fins de autenticação
     source = {
-        "path": "https://raw.githubusercontent.com/splor-mg/obz-dados/metadata-save/datapackage.yaml",
+        "path": "https://raw.githubusercontent.com/splor-mg/dados-sisor-2023/main/datapackage.yaml",
         "token": "GH_PAT"
     }
     result = get_commit_info(source)
@@ -25,9 +25,9 @@ def test_get_commit_info_from_branch_private_repo():
     expected = {
         "host": "raw.githubusercontent.com",
         "user": "splor-mg",
-        "repo": "obz-dados",
-        "ref": "metadata-save",
-        "sha": "f0e49cd65e4b234ba639d666d360fa0e33ceae95"
+        "repo": "dados-sisor-2023",
+        "ref": "main",
+        "sha": "8fe577af619ae7ec7fec821b60fed96d46561858"
     }
 
     assert result == expected
