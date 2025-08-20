@@ -58,32 +58,45 @@ def cli_install(
     """
     Download and install data packages listed in a descriptor file.
 
-    This command-line interface (CLI) function reads a TOML descriptor file that
-    specifies data packages and their associated resources. It downloads the
-    specified packages and saves them into a designated output directory.
-    This functionality is particularly useful for managing datasets and ensuring
-    that the necessary resources are readily available for use.
+    This command reads a TOML descriptor (`data.toml`) that specifies
+    data packages and optionally which resources to fetch from each package.
+    It downloads the selected packages/resources and saves them into
+    the chosen output directory.
 
     Args:
         descriptor (Path):
-            The path to the TOML file containing the package descriptors. The
-            default value is "data.toml". This file should define the sources
-            from which the data packages will be downloaded.
-
+            Path to the TOML file containing the package descriptors. Default: "data.toml".
         output_dir (Path, optional):
-            The directory where the downloaded data packages and resources will
-            be saved. The default is "datapackages". This directory will be created
-            if it does not exist.
+            Directory where the downloaded data packages and resources will be saved. Default: "datapackages".
+        package (list[str], optional):
+            Names of packages (as defined under `[packages]` in `data.toml`) to install. If omitted, all packages are installed.
 
-    Example:
-        To install data packages from a specified TOML descriptor file:
+    Installing only specific resources
+    ----------------------------------
+    To install only a subset of resources from a package, add a `resources` array
+    under the package in `data.toml`. Only those resources will be fetched. If omitted,
+    all resources described in the `datapackage.json` are downloaded.
 
-        ```bash
-        dpm install data.toml --output-dir datapackages
-        ```
+    Example `data.toml`:
 
-        This command will read the `data.toml` file, download the listed data
-        packages, and save them into the `datapackages` folder.
+    ```toml
+    [packages]
+
+    [packages.my_package]
+    path = "https://raw.githubusercontent.com/org/repo/datapackage.json"
+    # Only these resources will be downloaded
+    resources = ["table_one", "table_two"]
+    ```
+
+    CLI examples:
+    - Install everything defined in `data.toml` to the default directory:
+      ```bash
+      dpm install
+      ```
+    - Install only listed packages and store them under a custom directory:
+      ```bash
+      dpm install data.toml --output-dir datapackages --package my_package --package other_package
+      ```
     """
 
     with open(descriptor, "rb") as f:

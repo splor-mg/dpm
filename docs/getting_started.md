@@ -47,3 +47,35 @@ For each resource, a subfolder named `your_datapackage_name` will be created, an
     ├── data.toml
     └── main.py
 ```
+
+### Step 3: Install Only Specific Resources (Optional)
+
+If you want to download only a subset of resources from a package, add a `resources` key under the package in your `data.toml`. Only the listed resources will be fetched and saved locally.
+
+Example:
+
+```toml
+# file: data.toml
+[packages]
+
+[packages.your_datapackage_name]
+path = "https://raw.githubusercontent.com/your-org/your_repo/datapackage.json"
+# Optional: personal access token env var name for private repositories
+# token = "GITHUB_TOKEN"
+
+# Only these resources will be downloaded
+resources = [
+  "table_one",
+  "table_two"
+]
+```
+
+Then run:
+
+```bash
+dpm install
+```
+
+Notes:
+- If `resources` is omitted, all resources described in the `datapackage.json` will be downloaded.
+- If a name in `resources` does not exist in the data package, it will be skipped and a warning will be logged.
